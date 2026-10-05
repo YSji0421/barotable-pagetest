@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>바로테이블 · 예약 조회</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
+  <link rel="stylesheet" href="../static/css/app.css?v=20261025a" th:href="@{/css/app.css}">
+</head>
+<!-- C-07 비회원 예약 조회 · 취소 (이메일 조회 링크 + 예약번호·연락처 보조 조회) -->
+<body data-depth="0" data-screen="lookup" th:data-server="true">
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="index.html" th:href="@{/}" data-go="index">바로테이블</a>
+      <span class="head-store">바로키친 성수점</span>
+    </div>
+  </header>
+  <main class="page wrap" style="max-width:560px">
+    <div class="page-title"><div><h1>비회원 예약 조회</h1><p>예약 완료 메일의 조회 링크로 들어오면 바로 예약을 확인하고 취소할 수 있습니다.</p></div></div>
+    <section class="card stack" aria-label="조회 결과" id="lk-link" hidden>
+      <div class="stack" id="lk-result" aria-live="polite"></div>
+    </section>
+    <section class="card stack" aria-labelledby="rs-title" id="lk-resend">
+      <div><h2 id="rs-title">조회 링크를 잃어버렸나요?</h2><p class="card-sub">예약할 때 적은 이메일로 조회 링크를 다시 보내 드려요.</p></div>
+      <form class="stack" id="rs-form" autocomplete="off">
+        <div class="field"><label for="rs-email">이메일</label><input class="input" id="rs-email" type="email" value="taemin@example.com" inputmode="email" required></div>
+        <button class="btn btn-primary" type="submit">조회 링크 다시 받기</button>
+      </form>
+      <p class="notice" id="rs-msg" aria-live="polite" hidden></p>
+    </section>
+    <details class="card" id="lk-alt" style="margin-top:12px">
+      <summary style="cursor:pointer;font-weight:600">예약번호와 연락처로 조회</summary>
+      <form class="stack" id="lk-form" autocomplete="off" style="margin-top:12px">
+        <div class="field"><label for="lk-no">예약번호</label><input class="input mono" id="lk-no" value="BT-20261005-0025" required></div>
+        <div class="field"><label for="lk-phone">연락처</label><input class="input mono" id="lk-phone" value="010-8888-9999" inputmode="tel" required></div>
+        <button class="btn btn-ghost" type="submit">예약 조회</button>
+      </form>
+    </details>
+    <p class="hint" style="margin-top:12px">시연용: <a href="#" id="demo-link">강태민 님 메일 속 조회 링크 열기</a> (오늘 19:30, 취소 가능) · 예약번호 BT-20261005-0025 / 010-8888-9999</p>
+    <p style="margin-top:16px"><a href="index.html" th:href="@{/}" data-go="index">← 매장 첫 화면</a></p>
+  </main>
+  <script src="../static/js/data.js?v=20261025a" th:src="@{/js/data.js}"></script>
+  <script src="../static/js/common.js?v=20261025a" th:src="@{/js/common.js}"></script>
+  <script src="../static/js/pages/lookup.js?v=20261025a" th:src="@{/js/pages/lookup.js}"></script>
+</body>
+</html>

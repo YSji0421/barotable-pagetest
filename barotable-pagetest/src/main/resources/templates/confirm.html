@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>바로테이블 · 예약 확인</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
+  <link rel="stylesheet" href="../static/css/app.css?v=20261025a" th:href="@{/css/app.css}">
+</head>
+<!-- C-04 / C-05 예약자 정보와 최종 확인 -->
+<body data-depth="0" data-screen="confirm" th:data-server="true">
+  <header class="site-head">
+    <div class="wrap">
+      <a class="brand" href="index.html" th:href="@{/}" data-go="index">바로테이블</a>
+      <span class="head-store" id="head-store">바로키친 성수점</span>
+      <span class="head-spacer"></span>
+      <nav class="steps" aria-label="예약 단계">
+        <span class="done"><b>✓</b><em>날짜·인원</em></span><i></i>
+        <span class="done"><b>✓</b><em>방문 시간</em></span><i></i>
+        <span class="done"><b>✓</b><em>자리 선택</em></span><i></i>
+        <span class="on"><b>4</b><em>예약 확인</em></span><i></i>
+        <span class=""><b>5</b><em>완료</em></span>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page wrap">
+    <div class="page-title">
+      <div>
+        <h1>예약자 정보와 최종 확인</h1>
+        <p>선택한 테이블과 개인정보 수집 동의를 한 화면에서 확인합니다.</p>
+      </div>
+      <a class="btn btn-ghost btn-sm" href="reserve.html" th:href="@{/reserve}" data-go="reserve">← 좌석 다시 고르기</a>
+    </div>
+
+    <div class="grid cols-2">
+      <section class="card stack" aria-labelledby="info-title">
+        <div>
+          <h2 id="info-title">예약자 확인</h2>
+          <p class="card-sub">첫 화면에서 입력한 이름과 전화번호를 사용합니다.</p>
+        </div>
+        <div class="form-row">
+          <div class="field"><label for="c-name">예약자</label><input class="input" id="c-name" value="홍길동" readonly></div>
+          <div class="field"><label for="c-phone">연락처</label><input class="input mono" id="c-phone" value="010-0000-0000" readonly></div>
+        </div>
+        <div class="field">
+          <label for="c-email">이메일 <span class="faint">(예약 확인 · 방문 전날 알림)</span></label>
+          <input class="input" id="c-email" type="email" autocomplete="email" value="hello@example.com">
+        </div>
+        <div class="field">
+          <label for="c-req">요청사항 <span class="faint">(선택)</span></label>
+          <textarea class="textarea" id="c-req" maxlength="200" placeholder="예) 아이 의자 1개 부탁드려요"></textarea>
+        </div>
+        <label class="check" for="c-agree">
+          <input type="checkbox" id="c-agree">
+          <span><b>개인정보 수집·이용에 동의합니다</b> <span class="faint">(필수)</span><br>
+            <span class="hint">수집 항목: 이름, 연락처, 이메일 · 목적: 예약 확인과 알림 발송 · 보관: 방문일로부터 90일 후 파기</span></span>
+        </label>
+      </section>
+
+      <section class="card card-dark stack" aria-labelledby="sum-title">
+        <h2 id="sum-title">예약 내용 확인</h2>
+        <dl class="kv" id="summary"></dl>
+        <div class="map-scroll" style="border-radius:10px"><div id="mini-map"></div></div>
+        <a class="btn btn-primary btn-block" href="complete.html" th:href="@{/reserve/complete}" data-go="complete">예약 확정</a>
+      </section>
+    </div>
+  </main>
+
+  <script src="../static/js/data.js?v=20261025a" th:src="@{/js/data.js}"></script>
+  <script src="../static/js/common.js?v=20261025a" th:src="@{/js/common.js}"></script>
+  <script src="../static/js/seatmap.js?v=20261025a" th:src="@{/js/seatmap.js}"></script>
+  <script src="../static/js/pages/confirm.js?v=20261025a" th:src="@{/js/pages/confirm.js}"></script>
+</body>
+</html>
