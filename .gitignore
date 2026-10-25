@@ -1,0 +1,24 @@
+   # Gradle / Maven
+   .gradle/
+   build/
+   target/
+   !gradle/wrapper/gradle-wrapper.jar
+
+   # IntelliJ / VS Code / Eclipse
+   .idea/
+   *.iml
+   .vscode/
+   .classpath
+   .project
+   .settings/
+   bin/
+   out/
+
+   # 환경 설정 (비밀번호, API 키)
+   .env
+   application-local.yml
+   application-local.properties
+
+   # OS
+   Thumbs.db
+   .DS_Store

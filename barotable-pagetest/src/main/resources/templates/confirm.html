@@ -6,7 +6,7 @@
   <title>바로테이블 · 예약 확인</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
-  <link rel="stylesheet" href="../static/css/app.css" th:href="@{/css/app.css}">
+  <link rel="stylesheet" href="../static/css/app.css?v=20261025a" th:href="@{/css/app.css}">
 </head>
 <!-- C-04 / C-05 예약자 정보와 최종 확인 -->
 <body data-depth="0" data-screen="confirm" th:data-server="true">
@@ -16,9 +16,11 @@
       <span class="head-store" id="head-store">바로키친 성수점</span>
       <span class="head-spacer"></span>
       <nav class="steps" aria-label="예약 단계">
-        <span class="done"><b>✓</b>좌석 선택</span><i></i>
-        <span class="on"><b>2</b>정보 확인</span><i></i>
-        <span><b>3</b>완료</span>
+        <span class="done"><b>✓</b><em>날짜·인원</em></span><i></i>
+        <span class="done"><b>✓</b><em>방문 시간</em></span><i></i>
+        <span class="done"><b>✓</b><em>자리 선택</em></span><i></i>
+        <span class="on"><b>4</b><em>예약 확인</em></span><i></i>
+        <span class=""><b>5</b><em>완료</em></span>
       </nav>
     </div>
   </header>
@@ -66,9 +68,9 @@
     </div>
   </main>
 
-  <script src="../static/js/data.js" th:src="@{/js/data.js}"></script>
-  <script src="../static/js/common.js" th:src="@{/js/common.js}"></script>
-  <script src="../static/js/seatmap.js" th:src="@{/js/seatmap.js}"></script>
-  <script src="../static/js/pages/confirm.js" th:src="@{/js/pages/confirm.js}"></script>
+  <script src="../static/js/data.js?v=20261025a" th:src="@{/js/data.js}"></script>
+  <script src="../static/js/common.js?v=20261025a" th:src="@{/js/common.js}"></script>
+  <script src="../static/js/seatmap.js?v=20261025a" th:src="@{/js/seatmap.js}"></script>
+  <script src="../static/js/pages/confirm.js?v=20261025a" th:src="@{/js/pages/confirm.js}"></script>
 </body>
 </html>

@@ -3,107 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>바로테이블 · 좌석 선택</title>
+  <title>바로테이블 · 예약하기</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
-  <link rel="stylesheet" href="../static/css/app.css" th:href="@{/css/app.css}">
+  <link rel="stylesheet" href="../static/css/app.css?v=20261025a" th:href="@{/css/app.css}">
 </head>
 <!-- C-03 실제 테이블을 보고 고르는 예약 + C-AI 채팅 팝업 -->
 <body data-depth="0" data-screen="reserve" th:data-server="true">
-  <header class="site-head">
-    <div class="wrap">
-      <a class="brand" href="index.html" th:href="@{/}" data-go="index">바로테이블</a>
-      <span class="head-store" id="head-store">바로키친 성수점</span>
-      <span class="head-spacer"></span>
-      <nav class="steps" aria-label="예약 단계">
-        <span class="on"><b>1</b>좌석 선택</span><i></i>
-        <span><b>2</b>정보 확인</span><i></i>
-        <span><b>3</b>완료</span>
-      </nav>
-    </div>
-  </header>
+<header class="site-head"><div class="wrap"><a class="brand" href="index.html" th:href="@{/}" data-go="index">바로테이블<span class="brand-period">.</span></a><span class="head-store">바로키친 성수점</span><span class="head-spacer"></span><nav class="steps" id="booking-steps" aria-label="예약 진행"><span class="on" data-progress="1"><b>1</b><em>일정 선택</em></span><i></i><span data-progress="2"><b>2</b><em>테이블 선택</em></span><i></i><span data-progress="3"><b>3</b><em>정보 확인</em></span></nav></div></header>
+<main class="page wrap booking-page sheet-booking-page">
+ <section class="booking-store-stage" id="stage-store"><div class="booking-store-photo"><img src="../static/img/store-hall.jpg" th:src="@{/img/store-hall.jpg}" alt="식당 내부 이미지 예시"><span>매장 예시 이미지</span></div><div class="booking-store-intro"><span class="booking-store-overline">RESERVE YOUR TABLE</span><div class="venue-topline"><span class="venue-tag">이탈리안 다이닝</span><span class="venue-tag light">성수</span></div><h1>바로키친 성수점</h1><p>원하는 날짜와 시간을 선택하고, 실제 좌석 배치도를 보며 자리를 골라보세요.</p><div class="booking-store-points"><span>⌁ 창가 테이블</span><span>⌁ 1·2층 좌석</span><span>⌁ 원하는 자리 직접 선택</span></div><button type="button" class="btn btn-primary" id="open-booking-sheet">날짜 · 인원 · 시간 선택하기 <span>↗</span></button><div class="booking-store-mini"><b>위치</b><span>서울 성수동 · 시연용 매장</span><a data-go="index" href="index.html" th:href="@{/}">매장 정보 보기 ↗</a></div></div></section>
+ <section id="stage-seat" aria-label="테이블 선택" hidden><div class="booking-intro booking-seat-heading"><span class="booking-eyebrow" id="booking-counter">STEP 2 / 3</span><h1 id="booking-title">마음에 드는 자리를 선택하세요</h1><p id="booking-description">선택한 일정에 예약 가능한 테이블만 고를 수 있어요.</p></div><div class="booking-summary-inline booking-seat-summary"><span id="seat-context">방문 일정</span><button type="button" class="btn btn-ghost btn-sm" id="edit-visit">⌁ 일정 변경</button></div><div class="grid cols-main-side booking-seat-grid"><section class="card booking-map-card" aria-label="좌석도"><div class="booking-map-head"><div class="tabs" id="floor-tabs" role="tablist" aria-label="층 선택"></div><button class="btn btn-ghost btn-sm" type="button" id="sf-open" aria-haspopup="dialog">⤢ 크게 보기</button></div><div class="legend booking-legend" aria-label="테이블 상태"><span><i></i>예약 가능</span><span><i class="l-no"></i>예약 완료</span><span><i class="l-sel"></i>내가 선택</span><span><i class="l-rec"></i>추천</span></div><div class="zone-filter" id="zone-filter" aria-label="구역 필터"></div><div class="map-scroll booking-map-scroll"><div id="map"></div></div><p class="booking-note">회색 빗금 좌석은 이미 예약이 완료된 자리입니다.</p></section><aside class="card sel-panel stack booking-side" id="sel-panel" aria-live="polite"></aside></div></section>
+ </main>
+ <div id="booking-overlay" class="booking-overlay" hidden></div>
+ <section id="booking-sheet" class="booking-bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="booking-sheet-title" hidden tabindex="-1"><div class="sheet-handle" aria-hidden="true"></div><div class="sheet-top"><div><span class="sheet-kicker">BAROTABLE RESERVATION</span><h2 id="booking-sheet-title">언제 방문하시나요?</h2><p>날짜 · 인원 · 시간까지 한 번에 선택하세요.</p></div><button id="close-booking-sheet" class="sheet-close" type="button" aria-label="예약 선택창 닫기">×</button></div>
+  <div class="sheet-body"><div class="sheet-calendar-label"><div><span class="sheet-section-index">01</span><strong>날짜 선택</strong></div><b>2026년 10월</b></div><div class="sheet-calendar"><div class="calendar-week"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div><div class="calendar-grid" id="date-strip" role="group" aria-label="방문 날짜 달력"></div></div>
+  <div class="sheet-section-head"><div><span class="sheet-section-index">02</span><strong>방문 인원</strong></div><span id="p-hint">1–8명</span></div><div class="sheet-horizontal" id="party-strip" role="group" aria-label="방문 인원 선택"></div><div class="sheet-compat-party" hidden><button id="p-minus" type="button">−</button><output id="p-val">4명</output><button id="p-plus" type="button">+</button><span id="req-badge" hidden></span></div>
+  <div class="sheet-section-head"><div><span class="sheet-section-index">03</span><strong>방문 시간</strong></div><span id="hours-small"></span></div><div id="time-groups" class="sheet-time-groups" aria-label="시간대 선택"></div><p class="sheet-tip">시간을 선택한 뒤 아래 확인 버튼을 눌러 테이블을 확인하세요.</p></div>
+  <div class="sheet-footer"><div class="sheet-footer-note"><b id="sheet-current-date">방문 일정 선택</b><span id="sheet-current-party">4명 · 18:00</span></div><button type="button" id="sheet-confirm" class="btn btn-primary sheet-confirm-btn">테이블 확인하기 <span aria-hidden="true">→</span></button></div>
+ </section>
+ <button class="fab" type="button" id="ai-fab" aria-haspopup="dialog" aria-controls="chat-pop" aria-expanded="false"><span class="ai-mark">AI</span><span>채팅으로 예약</span></button><section class="chat-pop" id="chat-pop" role="dialog" aria-modal="false" aria-labelledby="chat-title" hidden><div class="chat-head"><span class="ai-mark" aria-hidden="true">AI</span><div><h2 id="chat-title">예약 도우미</h2><p>날짜 · 시간 · 인원 · 요청사항만 정리해요</p></div><button class="x" type="button" id="chat-close" aria-label="채팅 닫기">×</button></div><div class="chat-guard">이름·연락처는 채팅에 입력하지 마세요. 입력칸에서 따로 받습니다.</div><div class="chat-body" id="chat-body" aria-live="polite"></div><div class="chat-suggest" id="chat-suggest"></div><form class="chat-input" id="chat-form" autocomplete="off"><label class="sr-only" for="chat-text">메시지</label><input id="chat-text" placeholder="예) 이번 토요일 저녁 7시 4명, 아이 의자 필요해요"><button type="submit" aria-label="보내기">↑</button></form></section>
 
-  <main class="page wrap">
-    <div class="page-title">
-      <div>
-        <h1>테이블을 보고 고르세요</h1>
-        <p id="who-line">예약 조건을 고르면 앉을 수 있는 자리가 표시됩니다.</p>
-      </div>
-    </div>
-
-    <!-- 예약 조건 -->
-    <section class="card cond" aria-label="예약 조건">
-      <div class="cond-row">
-        <div class="cond-label">날짜<small>10월 중 선택</small></div>
-        <div style="min-width:0">
-          <div class="month-head"><strong>2026년 10월</strong><span class="faint" style="font-size:12.5px">지난 날짜는 선택할 수 없어요</span></div>
-          <div class="date-strip" id="date-strip" role="listbox" aria-label="10월 날짜"></div>
-        </div>
-      </div>
-      <div class="cond-row">
-        <div class="cond-label">시간<small id="hours-small">11:30–22:00</small></div>
-        <div class="time-groups" id="time-groups"></div>
-      </div>
-      <div class="cond-row">
-        <div class="cond-label">인원</div>
-        <div class="row">
-          <div class="stepper" role="group" aria-label="인원">
-            <button type="button" id="p-minus" aria-label="인원 줄이기">−</button>
-            <output id="p-val" aria-live="polite">4명</output>
-            <button type="button" id="p-plus" aria-label="인원 늘리기">+</button>
-          </div>
-          <span class="hint">1–8명 · 그 이상은 매장으로 문의</span>
-          <span class="badge badge-indigo" id="req-badge" hidden></span>
-        </div>
-      </div>
-    </section>
-
-    <div class="grid cols-main-side" style="margin-top:18px">
-      <!-- 좌석도 -->
-      <section class="card" aria-label="좌석도">
-        <div class="card-head">
-          <div class="tabs" id="floor-tabs" role="tablist" aria-label="층 선택"></div>
-          <div class="legend">
-            <span><i></i>가능</span><span><i class="l-sel"></i>선택</span><span><i class="l-rec"></i>추천</span><span><i class="l-no"></i>예약됨</span>
-          </div>
-        </div>
-        <div class="zone-filter" id="zone-filter" aria-label="구역 필터" style="margin-bottom:14px"></div>
-        <div class="map-scroll"><div id="map"></div></div>
-        <p class="hint" style="margin-top:10px">회색 빗금 테이블은 이미 예약된 자리입니다.</p>
-      </section>
-
-      <!-- 선택 패널 -->
-      <aside class="card sel-panel stack" id="sel-panel" aria-live="polite"></aside>
-    </div>
-  </main>
-
-  <!-- C-AI 채팅 팝업 -->
-  <button class="fab" type="button" id="ai-fab" aria-haspopup="dialog" aria-controls="chat-pop" aria-expanded="false">
-    <span class="ai-mark">AI</span><span>채팅으로 예약</span>
-  </button>
-  <section class="chat-pop" id="chat-pop" role="dialog" aria-modal="false" aria-labelledby="chat-title" hidden>
-    <div class="chat-head">
-      <span class="ai-mark" aria-hidden="true">AI</span>
-      <div>
-        <h2 id="chat-title">예약 도우미</h2>
-        <p>날짜 · 시간 · 인원 · 요청사항만 정리해요</p>
-      </div>
-      <button class="x" type="button" id="chat-close" aria-label="채팅 닫기">×</button>
-    </div>
-    <div class="chat-guard">이름·연락처는 채팅에 입력하지 마세요. 입력칸에서 따로 받습니다.</div>
-    <div class="chat-body" id="chat-body" aria-live="polite"></div>
-    <div class="chat-suggest" id="chat-suggest"></div>
-    <form class="chat-input" id="chat-form" autocomplete="off">
-      <label class="sr-only" for="chat-text">메시지</label>
-      <input id="chat-text" placeholder="예) 이번 토요일 저녁 7시 4명, 아이 의자 필요해요">
-      <button type="submit" aria-label="보내기">↑</button>
-    </form>
-  </section>
-
-  <script src="../static/js/data.js" th:src="@{/js/data.js}"></script>
-  <script src="../static/js/common.js" th:src="@{/js/common.js}"></script>
-  <script src="../static/js/seatmap.js" th:src="@{/js/seatmap.js}"></script>
-  <script src="../static/js/pages/reserve.js" th:src="@{/js/pages/reserve.js}"></script>
-  <script src="../static/js/ai-chat.js" th:src="@{/js/ai-chat.js}"></script>
+  <script src="../static/js/data.js?v=20261025a" th:src="@{/js/data.js}"></script>
+  <script src="../static/js/common.js?v=20261025a" th:src="@{/js/common.js}"></script>
+  <script src="../static/js/seatmap.js?v=20261025a" th:src="@{/js/seatmap.js}"></script>
+  <script src="../static/js/pages/reserve.js?v=20261025a" th:src="@{/js/pages/reserve.js}"></script>
+  <script src="../static/js/ai-chat.js?v=20261025a" th:src="@{/js/ai-chat.js}"></script>
 </body>
 </html>

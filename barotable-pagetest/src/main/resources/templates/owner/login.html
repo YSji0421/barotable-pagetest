@@ -6,7 +6,7 @@
   <title>바로테이블 · 점주 로그인</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
-  <link rel="stylesheet" href="../../static/css/app.css" th:href="@{/css/app.css}">
+  <link rel="stylesheet" href="../../static/css/app.css?v=20261025a" th:href="@{/css/app.css}">
 </head>
 <!-- A-01 점주·관리자 로그인 (Spring Security formLogin 으로 연결 예정) -->
 <body data-depth="1" data-screen="owner-login" th:data-server="true">
@@ -33,6 +33,10 @@
 
       <section class="card stack" aria-labelledby="lg-title">
         <h2 id="lg-title">로그인</h2>
+        <div class="tabs" id="role-tabs" role="tablist" aria-label="계정 종류" style="align-self:flex-start">
+          <button type="button" role="tab" class="tab on" data-role="owner" aria-selected="true">점주</button>
+          <button type="button" role="tab" class="tab" data-role="admin" aria-selected="false">서비스 관리자</button>
+        </div>
         <div class="field">
           <label for="lg-email">계정 이메일</label>
           <input class="input" id="lg-email" name="username" type="email" autocomplete="username" value="owner@example.com">
@@ -41,11 +45,25 @@
           <label for="lg-pw">비밀번호</label>
           <input class="input" id="lg-pw" name="password" type="password" autocomplete="current-password" value="barotable">
         </div>
-        <a class="btn btn-indigo" href="dashboard.html" th:href="@{/owner/dashboard}" data-go="owner-dashboard">로그인</a>
+        <a class="btn btn-indigo" id="lg-go" href="dashboard.html" th:href="@{/owner/dashboard}" data-go="owner-dashboard">로그인</a>
+        <p class="hint" id="lg-hint">점주 계정은 서비스 관리자가 승인한 뒤 쓸 수 있어요.</p>
       </section>
     </div>
   </main>
-  <script src="../../static/js/data.js" th:src="@{/js/data.js}"></script>
-  <script src="../../static/js/common.js" th:src="@{/js/common.js}"></script>
+  <script src="../../static/js/data.js?v=20261025a" th:src="@{/js/data.js}"></script>
+  <script src="../../static/js/common.js?v=20261025a" th:src="@{/js/common.js}"></script>
+  <script>
+    /* 화면 확인용: 역할에 따라 이동할 화면만 바꾼다 (실제 구현은 Spring Security 역할 OWNER / ADMIN) */
+    (function () {
+      const ROLE = { owner: ['owner@example.com', 'owner-dashboard', '점주 계정은 서비스 관리자가 승인한 뒤 쓸 수 있어요.'], admin: ['admin@example.com', 'admin', '관리자는 점주 계정 승인과 서비스 상태를 봅니다.'] };
+      document.querySelectorAll('#role-tabs .tab').forEach(b => b.addEventListener('click', () => {
+        const r = ROLE[b.dataset.role];
+        document.querySelectorAll('#role-tabs .tab').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); });
+        document.getElementById('lg-email').value = r[0];
+        const go = document.getElementById('lg-go'); go.dataset.go = r[1]; go.href = BT.url(r[1]);
+        document.getElementById('lg-hint').textContent = r[2];
+      }));
+    })();
+  </script>
 </body>
 </html>

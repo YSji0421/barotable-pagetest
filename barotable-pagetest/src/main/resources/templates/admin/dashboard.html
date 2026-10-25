@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>바로테이블 · 서비스 관리자</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
+  <link rel="stylesheet" href="../../static/css/app.css?v=20261025a" th:href="@{/css/app.css}">
+</head>
+<!-- A-02 서비스 관리자 (점주 계정 승인 · 서비스 상태) -->
+<body data-depth="1" data-screen="admin" th:data-server="true">
+  <div class="owner-shell">
+    <aside class="side admin-side" aria-label="서비스 관리자 메뉴" id="admin-side">
+      <div class="side-identity">
+        <div class="brand">바로테이블<span class="side-brand-dot">.</span></div>
+        <span class="side-role">ADMIN CONSOLE</span>
+      </div>
+      <div class="side-store"><span class="admin-store-symbol" aria-hidden="true">A</span><span>서비스 관리자<small>전체 서비스 운영</small></span></div>
+      <div class="side-section-title">관리 메뉴</div>
+      <nav class="side-nav" aria-label="관리 기능">
+        <a href="#overview" class="on" data-admin-target="overview" aria-current="location"><span class="admin-nav-icon" aria-hidden="true">▦</span>대시보드</a>
+        <a href="#approvals" data-admin-target="approvals"><span class="admin-nav-icon" aria-hidden="true">✓</span>점주 계정 승인</a>
+        <a href="#services" data-admin-target="services"><span class="admin-nav-icon" aria-hidden="true">◉</span>서비스 상태</a>
+        <a href="#activity" data-admin-target="activity"><span class="admin-nav-icon" aria-hidden="true">≡</span>최근 활동</a>
+      </nav>
+      <div class="side-bottom">
+        <div class="side-section-title">바로가기</div>
+        <a href="../index.html" th:href="@{/}" data-go="index" class="side-shortcut">↗ &nbsp; 매장 홈</a>
+        <a href="../owner/login.html" th:href="@{/owner/login}" data-go="owner-login" class="side-shortcut">↩ &nbsp; 로그아웃</a>
+        <div class="side-who">admin@example.com · 관리자</div>
+      </div>
+    </aside>
+    <main class="owner-main">
+      <div class="page-title" id="overview">
+        <div>
+          <h1>서비스 관리자</h1>
+          <p>신규 점주 계정을 승인하고, 서비스 상태를 확인합니다.</p>
+        </div>
+        <span class="badge badge-teal" style="font-size:13px;padding:6px 12px">시스템 정상</span>
+      </div>
+
+      <section class="stats" id="stats" aria-label="서비스 요약"></section>
+
+      <div class="grid cols-main-side" style="margin-top:18px">
+        <section class="card stack" id="approvals" aria-labelledby="ap-title">
+          <div class="card-head" style="margin-bottom:0">
+            <div><h2 id="ap-title">점주 계정 승인</h2><p class="card-sub">신규 가입한 점주의 매장 정보를 확인하고 승인합니다. 승인 전에는 점주 화면에 들어갈 수 없습니다.</p></div>
+            <span class="badge badge-amber" id="ap-badge"></span>
+          </div>
+          <div class="stack" style="gap:10px" id="ap-list" aria-live="polite"></div>
+        </section>
+
+        <div class="stack" style="gap:18px;min-width:0">
+          <section class="card stack" id="services" aria-labelledby="sv-title">
+            <h2 id="sv-title">서비스 상태</h2>
+            <dl class="kv" id="sv-list"></dl>
+          </section>
+          <section class="card stack" id="activity" aria-labelledby="ac-title">
+            <h2 id="ac-title">최근 관리자 활동</h2>
+            <ul class="result-list" id="ac-list"></ul>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../../static/js/data.js?v=20261025a" th:src="@{/js/data.js}"></script>
+  <script src="../../static/js/common.js?v=20261025a" th:src="@{/js/common.js}"></script>
+  <script src="../../static/js/pages/admin.js?v=20261025a" th:src="@{/js/pages/admin.js}"></script>
+</body>
+</html>

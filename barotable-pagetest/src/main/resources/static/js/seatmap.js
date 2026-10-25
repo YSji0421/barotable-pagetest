@@ -8,6 +8,7 @@ window.SeatMap = (function () {
   function place(el, o) {
     el.style.left = pct(o.x, W); el.style.top = pct(o.y, H);
     el.style.width = pct(o.w, W); el.style.height = pct(o.h, H);
+    el.style.setProperty('--rot', (o.rotation || 0) + 'deg');
   }
   /**
    * @param host   컨테이너 요소

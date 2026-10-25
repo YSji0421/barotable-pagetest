@@ -6,7 +6,7 @@
   <title>바로테이블 · 운영 조건</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
-  <link rel="stylesheet" href="../../static/css/app.css" th:href="@{/css/app.css}">
+  <link rel="stylesheet" href="../../static/css/app.css?v=20261025a" th:href="@{/css/app.css}">
 </head>
 <!-- O-04 운영 조건 -->
 <body data-depth="1" data-screen="owner-settings" th:data-server="true">
@@ -32,7 +32,7 @@
               <div class="field"><label for="s-bs">브레이크 시작</label><input class="input" type="time" id="s-bs" value="15:00" step="1800"></div>
               <div class="field"><label for="s-be">브레이크 끝</label><input class="input" type="time" id="s-be" value="17:00" step="1800"></div>
             </div>
-            <p class="notice">손님 화면 예약 시간: 11:30 ~ 21:30 · 브레이크 15:00–17:00 제외</p>
+            <p class="notice" id="s-preview" aria-live="polite">손님 화면 예약 시간: 11:30 ~ 21:30 · 브레이크 15:00–17:00 제외</p>
           </section>
 
           <section class="card stack" aria-labelledby="s2">
@@ -55,12 +55,33 @@
             <label class="switch"><input type="checkbox" id="s-n1" checked><span class="track"></span>예약 확정 시 확인 이메일 보내기</label>
             <label class="switch"><input type="checkbox" id="s-n2" checked><span class="track"></span>방문 전날 알림 이메일 보내기</label>
           </section>
+
+          <section class="card stack" aria-labelledby="s4" style="grid-column:1/-1">
+            <h2 id="s4">AI 채팅 해석</h2>
+            <p class="card-sub">채팅 문장은 규칙 파서가 먼저 읽습니다. 규칙으로 읽지 못한 문장만 아래에서 고른 방식으로 해석합니다. 테이블은 AI가 고르지 않습니다.</p>
+            <div class="radio-cards" role="radiogroup" aria-labelledby="s4">
+              <label class="radio-card"><input type="radio" name="s-ai" value="local" checked><b>로컬 LLM (기본)</b><span>매장 서버의 소형 모델이 해석합니다. 문장이 외부로 나가지 않고 사용료가 없습니다.</span></label>
+              <label class="radio-card"><input type="radio" name="s-ai" value="external"><b>외부 API (선택)</b><span>외부 AI 서비스에 문장을 보내 해석합니다. 호출마다 요금이 듭니다.</span></label>
+              <label class="radio-card"><input type="radio" name="s-ai" value="off"><b>사용 안 함</b><span>채팅 버튼을 숨깁니다. 손님은 날짜·시간·인원을 직접 고릅니다.</span></label>
+            </div>
+          </section>
         </div>
+
+        <section class="card" style="margin-top:16px" aria-label="저장">
+          <div class="row ed-savebar" style="margin-top:0;padding-top:0;border-top:0">
+            <span class="hint" id="save-state" aria-live="polite">저장된 설정</span>
+            <span class="grow"></span>
+            <button class="btn btn-ghost btn-sm" type="button" id="s-reset">기본값으로</button>
+            <button class="btn btn-primary btn-sm" type="button" id="s-save">운영 조건 저장</button>
+          </div>
+          <ul class="result-list" id="s-result" style="margin-top:10px" hidden></ul>
+        </section>
       </div>
     </main>
   </div>
-  <script src="../../static/js/data.js" th:src="@{/js/data.js}"></script>
-  <script src="../../static/js/common.js" th:src="@{/js/common.js}"></script>
-  <script src="../../static/js/owner-common.js" th:src="@{/js/owner-common.js}"></script>
+  <script src="../../static/js/data.js?v=20261025a" th:src="@{/js/data.js}"></script>
+  <script src="../../static/js/common.js?v=20261025a" th:src="@{/js/common.js}"></script>
+  <script src="../../static/js/owner-common.js?v=20261025a" th:src="@{/js/owner-common.js}"></script>
+  <script src="../../static/js/pages/settings.js?v=20261025a" th:src="@{/js/pages/settings.js}"></script>
 </body>
 </html>

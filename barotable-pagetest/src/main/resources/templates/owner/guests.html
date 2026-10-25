@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>바로테이블 · 손님 배정</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
+  <link rel="stylesheet" href="../../static/css/app.css?v=20261025a" th:href="@{/css/app.css}">
+</head>
+<!-- O-05 손님 배정 (예약 없이 방문한 손님 · 전화 예약 손님) -->
+<body data-depth="1" data-screen="owner-guests" th:data-server="true">
+  <div class="owner-shell">
+    <aside class="side" id="owner-side" aria-label="점주 메뉴"></aside>
+    <main class="owner-main">
+      <div class="page-title">
+        <div>
+          <h1>손님 배정</h1>
+          <p>예약 없이 온 손님은 지금 바로, 전화로 예약한 손님은 방문 시간에 맞춰 자리를 잡아 둡니다.</p>
+        </div>
+        <span class="badge badge-gray" style="font-size:13px;padding:6px 12px">기준 시간 19:00</span>
+      </div>
+
+      <section class="card cond" aria-label="배정 조건">
+        <div class="cond-row">
+          <div class="cond-label">방식</div>
+          <div class="tabs" id="mode-tabs" role="tablist" aria-label="배정 방식">
+            <button type="button" role="tab" class="tab on" data-mode="quick" aria-selected="true">퀵 배정 <span class="faint" style="font-weight:500">예약 없이 방문</span></button>
+            <button type="button" role="tab" class="tab" data-mode="phone" aria-selected="false">전화 예약</button>
+          </div>
+        </div>
+        <div class="cond-row">
+          <div class="cond-label">인원</div>
+          <div class="row">
+            <div class="stepper" role="group" aria-label="인원">
+              <button type="button" id="g-minus" aria-label="인원 줄이기">−</button>
+              <output id="g-val" aria-live="polite">2명</output>
+              <button type="button" id="g-plus" aria-label="인원 늘리기">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="cond-row">
+          <div class="cond-label">시간</div>
+          <div class="row">
+            <b id="g-time-now" class="mono">지금 19:00</b>
+            <label class="sr-only" for="g-time">방문 예정 시간</label>
+            <select class="select" id="g-time" style="width:auto;min-height:38px" hidden></select>
+            <span class="hint" id="g-time-hint"></span>
+          </div>
+        </div>
+        <div class="cond-row" id="g-phone-row" hidden>
+          <div class="cond-label">연락처</div>
+          <div class="row" style="flex:1">
+            <label class="sr-only" for="g-name">이름</label>
+            <input class="input" id="g-name" placeholder="이름 (선택)" style="max-width:140px;min-height:38px">
+            <label class="sr-only" for="g-phone">전화번호</label>
+            <input class="input mono" id="g-phone" type="tel" inputmode="tel" placeholder="010-0000-0000" style="max-width:180px;min-height:38px">
+          </div>
+        </div>
+      </section>
+
+      <div class="grid cols-main-side" style="margin-top:18px">
+        <div class="stack" style="gap:18px;min-width:0">
+          <section class="card" aria-label="좌석도">
+            <div class="card-head">
+              <div class="tabs" id="floor-tabs" role="tablist" aria-label="층 선택"></div>
+              <div class="legend"><span><i></i>배정 가능</span><span><i class="l-sel"></i>선택</span><span><i class="l-rec"></i>추천</span><span><i class="l-no"></i>예약 · 이용 중 · 조건 안 맞음</span></div>
+            </div>
+            <div class="map-scroll"><div id="map"></div></div>
+          </section>
+
+          <section class="card" aria-labelledby="gtt-title">
+            <div class="card-head">
+              <div><h2 id="gtt-title">오늘 테이블 시간표</h2><p class="card-sub">점선 칸이 지금 배정하려는 자리와 시간입니다.</p></div>
+            </div>
+            <div class="tt-scroll" id="timetable"></div>
+            <div class="tt-legend"><span><i class="l-res"></i>예약</span><span><i class="l-seat"></i>이용 중</span><span><i class="l-walk"></i>워크인 · 전화</span><span><i class="l-brk"></i>브레이크 (예약 불가)</span></div>
+          </section>
+        </div>
+
+        <div class="stack" style="gap:18px;min-width:0">
+          <section class="card stack" id="assign" aria-live="polite" aria-label="배정"></section>
+          <section class="card stack" aria-labelledby="hist-title">
+            <h2 id="hist-title">오늘 손님 배정</h2>
+            <div class="stack" style="gap:8px" id="history"></div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="../../static/js/data.js?v=20261025a" th:src="@{/js/data.js}"></script>
+  <script src="../../static/js/common.js?v=20261025a" th:src="@{/js/common.js}"></script>
+  <script src="../../static/js/seatmap.js?v=20261025a" th:src="@{/js/seatmap.js}"></script>
+  <script src="../../static/js/timetable.js?v=20261025a" th:src="@{/js/timetable.js}"></script>
+  <script src="../../static/js/owner-common.js?v=20261025a" th:src="@{/js/owner-common.js}"></script>
+  <script src="../../static/js/pages/guests.js?v=20261025a" th:src="@{/js/pages/guests.js}"></script>
+</body>
+</html>

@@ -6,7 +6,7 @@
   <title>바로테이블 · 예약 완료</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
-  <link rel="stylesheet" href="../static/css/app.css" th:href="@{/css/app.css}">
+  <link rel="stylesheet" href="../static/css/app.css?v=20261025a" th:href="@{/css/app.css}">
 </head>
 <!-- C-06 예약 완료와 비회원 조회 -->
 <body data-depth="0" data-screen="complete" th:data-server="true">
@@ -16,15 +16,17 @@
       <span class="head-store" id="head-store">바로키친 성수점</span>
       <span class="head-spacer"></span>
       <nav class="steps" aria-label="예약 단계">
-        <span class="done"><b>✓</b>좌석 선택</span><i></i>
-        <span class="done"><b>✓</b>정보 확인</span><i></i>
-        <span class="on"><b>3</b>완료</span>
+        <span class="done"><b>✓</b><em>날짜·인원</em></span><i></i>
+        <span class="done"><b>✓</b><em>방문 시간</em></span><i></i>
+        <span class="done"><b>✓</b><em>자리 선택</em></span><i></i>
+        <span class="done"><b>✓</b><em>예약 확인</em></span><i></i>
+        <span class="on"><b>5</b><em>완료</em></span>
       </nav>
     </div>
   </header>
 
   <main class="page wrap">
-    <div class="grid cols-main-side" style="grid-template-columns:minmax(0,1fr) 360px">
+    <div class="grid cols-main-side" style="--side-w:360px">
       <section class="card stack" aria-labelledby="done-title" id="done-card">
         <span class="badge badge-solid" style="align-self:flex-start" id="done-badge">RESERVATION CONFIRMED</span>
         <div class="row" style="justify-content:space-between;align-items:flex-start;gap:20px">
@@ -40,8 +42,8 @@
         <hr class="divider">
         <dl class="kv" id="d-info"></dl>
         <div class="stack" style="gap:8px">
-          <p class="notice good">확인 이메일을 hello@example.com(으)로 보냈습니다.</p>
-          <p class="notice">방문 전날 알림 이메일을 한 번 더 보냅니다.</p>
+          <p class="notice good" id="n-confirm">확인 이메일을 hello@example.com(으)로 보냈습니다.</p>
+          <p class="notice" id="n-daybefore">방문 전날 알림 이메일을 한 번 더 보냅니다.</p>
         </div>
         <div class="row">
           <a class="btn btn-ghost" href="index.html" th:href="@{/}" data-go="index">처음으로</a>
@@ -51,20 +53,18 @@
 
       <section class="card stack" aria-labelledby="lk-title">
         <div>
-          <h2 id="lk-title">비회원 예약 조회</h2>
-          <p class="card-sub">예약번호와 연락처를 입력하세요</p>
+          <h2 id="lk-title">예약 조회 링크</h2>
+          <p class="card-sub">메일 속 링크로 언제든 확인하고 취소할 수 있어요</p>
         </div>
-        <div class="stack">
-          <div class="field"><label for="lk-no">예약번호</label><input class="input mono" id="lk-no" value="BT-20261010-0031"></div>
-          <div class="field"><label for="lk-phone">연락처</label><input class="input mono" id="lk-phone" value="010-0000-0000"></div>
-          <a class="btn btn-primary" href="lookup.html" th:href="@{/reservations/lookup}" data-go="lookup">예약 조회</a>
-        </div>
+        <p class="notice" id="lk-sent">hello@example.com(으)로 조회 링크를 보냈습니다. 링크는 방문일이 지나면 만료됩니다.</p>
+        <a class="btn btn-primary" id="lk-open" href="lookup.html" th:href="@{/reservations/lookup}">조회 링크 열기</a>
+        <p class="hint">시연용 버튼입니다. 실제로는 메일 속 링크를 누릅니다. 링크를 잃어버려도 예약 조회 화면에서 이메일로 다시 받거나, 예약번호와 연락처로 조회할 수 있어요.</p>
       </section>
     </div>
   </main>
 
-  <script src="../static/js/data.js" th:src="@{/js/data.js}"></script>
-  <script src="../static/js/common.js" th:src="@{/js/common.js}"></script>
-  <script src="../static/js/pages/complete.js" th:src="@{/js/pages/complete.js}"></script>
+  <script src="../static/js/data.js?v=20261025a" th:src="@{/js/data.js}"></script>
+  <script src="../static/js/common.js?v=20261025a" th:src="@{/js/common.js}"></script>
+  <script src="../static/js/pages/complete.js?v=20261025a" th:src="@{/js/pages/complete.js}"></script>
 </body>
 </html>

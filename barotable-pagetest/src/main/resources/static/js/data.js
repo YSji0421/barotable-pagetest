@@ -22,7 +22,7 @@ window.BT_DATA = (function () {
     slotLimit: 8,
     allowSeatChoice: true,
     noShowWarn: 2,
-    ai: 'openai', // openai | local | off
+    ai: 'local', // local(로컬 LLM, 기본) | external(외부 API, 선택) | off
     notify: { confirm: true, dayBefore: true }
   };
 
@@ -97,14 +97,36 @@ window.BT_DATA = (function () {
     { no: 'BT-20261005-0025', time: '19:30', name: '강태민', phone: '010-8888-9999', email: 'taemin@example.com', party: 2, table: 'T02', status: 'booked',   request: '' },
     { no: 'BT-20261005-0027', time: '20:00', name: '오수아', phone: '010-1212-3434', email: 'sua@example.com', party: 4, table: 'T23', status: 'booked',   request: '테라스 담요' },
     { no: 'BT-20261005-0028', time: '20:00', name: '서예준', phone: '010-5656-7878', email: 'yejun@example.com', party: 2, table: 'T06', status: 'booked',   request: '' },
-    { no: 'BT-20261005-0030', time: '20:30', name: '문가은', phone: '010-9090-1010', email: 'gaeun@example.com', party: 6, table: 'R02', status: 'booked',   request: '' }
+    { no: 'BT-20261005-0030', time: '20:30', name: '문가은', phone: '010-9090-1010', email: 'gaeun@example.com', party: 6, table: 'R02', status: 'booked',   request: '' },
+    /* 손님 화면 시연용 다른 날짜 예약 (date가 있는 항목은 점주 대시보드의 오늘 목록에 안 나옴) */
+    { no: 'BT-20261010-0011', date: '2026-10-10', time: '12:00', name: '조하린', phone: '010-3131-2020', email: 'harin@example.com', party: 2, table: 'T01', status: 'booked', request: '' },
+    { no: 'BT-20261010-0024', date: '2026-10-10', time: '18:00', name: '배도현', phone: '010-4242-3030', email: 'dohyun@example.com', party: 2, table: 'T05', status: 'booked', request: '' },
+    { no: 'BT-20261010-0026', date: '2026-10-10', time: '18:30', name: '신유나', phone: '010-5353-4040', email: 'yuna@example.com', party: 6, table: 'R02', status: 'booked', request: '' },
+    { no: 'BT-20261010-0029', date: '2026-10-10', time: '19:00', name: '임서진', phone: '010-6464-5050', email: 'seojin@example.com', party: 2, table: 'T06', status: 'booked', request: '' },
+    { no: 'BT-20261010-0033', date: '2026-10-10', time: '19:30', name: '권나래', phone: '010-7575-6060', email: 'narae@example.com', party: 2, table: 'T22', status: 'booked', request: '야외 자리' },
+    { no: 'BT-20261010-0035', date: '2026-10-10', time: '20:00', name: '남궁현', phone: '010-8686-7070', email: 'hyun@example.com', party: 2, table: 'T09', status: 'booked', request: '' }
   ];
   /* 연락처별 누적 노쇼 횟수 */
   const NOSHOW_HISTORY = { '010-5555-1212': 2, '010-9090-1010': 1 };
 
 
-  /* 손님 좌석도에 '예약됨'으로 고정 표시할 테이블 */
-  const CUSTOMER_RESERVED = ['T05', 'T06', 'T10', 'T22', 'R02'];
+  /* 서비스 관리자 화면 (v2 프로토타입에서 옮김)
+   *   GET /api/admin/owners?status=pending, POST /api/admin/owners/{id}/approve */
+  const ADMIN = {
+    stores: { total: 12, open: 11, check: 1 },
+    todayReservations: 84,
+    pending: [
+      { id: 'OW-0103', store: '성수 파스타랩', owner: '김점주', email: 'owner01@example.com', area: '서울 성동구', category: '이탈리안', tables: 14, appliedAt: '2026-10-03', bizNo: '123-45-*****' },
+      { id: 'OW-0104', store: '테이블 비스트로', owner: '이대표', email: 'owner02@example.com', area: '서울 마포구', category: '비스트로', tables: 9, appliedAt: '2026-10-04', bizNo: '234-56-*****' },
+      { id: 'OW-0105', store: '연남 한상', owner: '박사장', email: 'owner03@example.com', area: '서울 마포구', category: '한식', tables: 18, appliedAt: '2026-10-05', bizNo: '345-67-*****' }
+    ],
+    services: [['웹 예약', 'ok'], ['좌석도 서비스', 'ok'], ['AI 예약 도우미 (규칙 파서 + 로컬 LLM)', 'ok'], ['점검 대상 매장', '1곳']],
+    activity: [
+      { time: '16:42', title: '점주 계정 승인', desc: '바로키친 성수점 계정 활성화' },
+      { time: '14:10', title: 'AI 상태 확인', desc: '로컬 LLM 응답 정상' },
+      { time: '11:25', title: '서비스 점검', desc: '예약 및 좌석도 서비스 정상' }
+    ]
+  };
 
-  return { STORE, FLOORS, OWNER_TODAY, OWNER_NOW, OWNER_RESERVATIONS, NOSHOW_HISTORY, CUSTOMER_RESERVED };
+  return { STORE, FLOORS, OWNER_TODAY, OWNER_NOW, OWNER_RESERVATIONS, NOSHOW_HISTORY, ADMIN };
 })();

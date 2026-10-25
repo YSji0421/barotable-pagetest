@@ -6,7 +6,7 @@
   <title>바로테이블 · 좌석도 편집</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
-  <link rel="stylesheet" href="../../static/css/app.css" th:href="@{/css/app.css}">
+  <link rel="stylesheet" href="../../static/css/app.css?v=20261025a" th:href="@{/css/app.css}">
 </head>
 <!-- O-03 점주용 좌석도 편집 (층별 구역 나누기) -->
 <body data-depth="1" data-screen="owner-editor" th:data-server="true">
@@ -38,29 +38,51 @@
         <nav class="palette" aria-label="오브젝트">
           <h3>구역</h3>
           <button type="button" id="add-zone">구역 추가 <span>점선 영역</span></button>
-          <h3 style="margin-top:8px">테이블 · 시설 (고정)</h3>
-          <button type="button" disabled style="opacity:.5;cursor:default">2인 테이블 <span>원형</span></button>
-          <button type="button" disabled style="opacity:.5;cursor:default">4인 테이블 <span>사각</span></button>
-          <button type="button" disabled style="opacity:.5;cursor:default">6인 테이블 <span>사각</span></button>
-          <button type="button" disabled style="opacity:.5;cursor:default">바 테이블 <span>2인</span></button>
-          <button type="button" disabled style="opacity:.5;cursor:default">벽 · 창문 · 입구 · 주방</button>
+          <h3 style="margin-top:8px">테이블</h3>
+          <button type="button" draggable="true" data-add="table" data-preset="round2">2인 테이블 <span>원형</span></button>
+          <button type="button" draggable="true" data-add="table" data-preset="rect4">4인 테이블 <span>사각</span></button>
+          <button type="button" draggable="true" data-add="table" data-preset="rect6">6인 테이블 <span>사각</span></button>
+          <button type="button" draggable="true" data-add="table" data-preset="bar2">바 테이블 <span>2인</span></button>
+          <button type="button" draggable="true" data-add="table" data-preset="room8">룸 <span>8인</span></button>
+          <h3 style="margin-top:8px">시설</h3>
+          <button type="button" draggable="true" data-add="fixture" data-preset="window">창문</button>
+          <button type="button" draggable="true" data-add="fixture" data-preset="wall">벽</button>
+          <button type="button" draggable="true" data-add="fixture" data-preset="entrance">입구</button>
+          <button type="button" draggable="true" data-add="fixture" data-preset="kitchen">주방</button>
+          <button type="button" draggable="true" data-add="fixture" data-preset="restroom">화장실</button>
+          <button type="button" draggable="true" data-add="fixture" data-preset="stairs">계단</button>
+          <p class="palette-hint">눌러서 가운데에 놓거나, 캔버스로 끌어다 놓습니다.</p>
         </nav>
 
         <section class="card ed-canvas" style="padding:16px" aria-label="매장 캔버스">
           <div class="card-head" style="margin-bottom:10px">
-            <div><h2 id="canvas-title" style="font-size:16px">1층 캔버스</h2><p class="card-sub">구역을 클릭해 선택하고, 끌어서 옮기거나 오른쪽 아래 모서리로 크기를 바꿉니다.</p></div>
+            <div><h2 id="canvas-title" style="font-size:16px">1층 캔버스</h2><p class="card-sub">클릭해 선택하고 끌어서 옮깁니다. 오른쪽 아래 모서리로 크기, 오른쪽 패널에서 회전을 바꿉니다.</p></div>
+            <div class="row" role="group" aria-label="확대/축소">
+              <button class="btn btn-ghost btn-sm" type="button" id="zoom-out" aria-label="축소">−</button>
+              <output class="mono" id="zoom-val" style="min-width:48px;text-align:center">100%</output>
+              <button class="btn btn-ghost btn-sm" type="button" id="zoom-in" aria-label="확대">+</button>
+              <button class="btn btn-ghost btn-sm" type="button" id="zoom-fit">맞춤</button>
+            </div>
           </div>
           <div class="zone-filter" id="zone-chips" style="margin-bottom:12px"></div>
-          <div class="map-scroll"><div id="canvas"></div></div>
+          <div class="map-scroll ed-scroll" id="canvas-scroll"><div id="canvas"></div></div>
+          <p class="hint" style="margin-top:8px">Ctrl + 휠로 확대/축소, 방향키로 10단위 이동, Delete로 삭제합니다.</p>
+          <div class="row ed-savebar">
+            <span class="hint" id="save-state" aria-live="polite">저장된 배치</span>
+            <span class="grow"></span>
+            <button class="btn btn-ghost btn-sm" type="button" id="layout-reset">처음 배치로</button>
+            <button class="btn btn-primary btn-sm" type="button" id="layout-save">좌석도 저장</button>
+          </div>
+          <ul class="result-list" id="save-result" hidden></ul>
         </section>
 
         <aside class="card props stack" id="props" aria-live="polite" aria-label="속성"></aside>
       </div>
     </main>
   </div>
-  <script src="../../static/js/data.js" th:src="@{/js/data.js}"></script>
-  <script src="../../static/js/common.js" th:src="@{/js/common.js}"></script>
-  <script src="../../static/js/owner-common.js" th:src="@{/js/owner-common.js}"></script>
-  <script src="../../static/js/pages/editor.js" th:src="@{/js/pages/editor.js}"></script>
+  <script src="../../static/js/data.js?v=20261025a" th:src="@{/js/data.js}"></script>
+  <script src="../../static/js/common.js?v=20261025a" th:src="@{/js/common.js}"></script>
+  <script src="../../static/js/owner-common.js?v=20261025a" th:src="@{/js/owner-common.js}"></script>
+  <script src="../../static/js/pages/editor.js?v=20261025a" th:src="@{/js/pages/editor.js}"></script>
 </body>
 </html>
