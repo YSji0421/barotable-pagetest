@@ -1,8 +1,5 @@
 # barotable-pagetest
 
-> **preview/all 브랜치 안내:** 검토 중인 PR 브랜치 10개를 미리 합쳐 둔 확인용 브랜치입니다. 이 브랜치는 병합하지 않습니다.
-> 바로 보기: https://aceoberon.github.io/barotable/ (GitHub Pages 설정 후)
-
 바로테이블 화면 설계를 같이 보기 위한 버전입니다. 백엔드 없이, 데이터는 모두 하드코딩돼 있습니다.
 
 ## 여는 방법
