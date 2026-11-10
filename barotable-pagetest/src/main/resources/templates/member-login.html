@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>바로테이블 · 회원 로그인</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
+  <link rel="stylesheet" href="../static/css/app.css?v=20261110a" th:href="@{/css/app.css}">
+  <link rel="stylesheet" href="../static/css/responsive.css?v=20261110a" th:href="@{/css/responsive.css}">
+  <link rel="stylesheet" href="../static/css/member-login.css?v=20261110a" th:href="@{/css/member-login.css}">
+  <link rel="stylesheet" href="../static/css/ui.css?v=20261110a" th:href="@{/css/ui.css}">
+</head>
+<!-- M-01 회원 로그인 -->
+<body data-depth="0" data-screen="member-login" th:data-server="true">
+<header class="site-head"><div class="wrap"><a class="brand" data-go="index" href="index.html" th:href="@{/}">바로테이블</a><span class="head-sub">회원 서비스</span><span class="head-spacer"></span><a class="head-link" data-go="reserve" href="reserve.html" th:href="@{/reserve}">비회원 예약</a></div></header>
+<main class="page wrap member-login-page"><div class="page-title"><div><h1>회원 로그인</h1><p>로그인하고 예약 내역을 편리하게 관리하세요.</p></div></div>
+<section class="card stack member-login-card" aria-labelledby="member-login-title"><h2 id="member-login-title">로그인</h2>
+<form id="member-login-form" class="stack" autocomplete="on" action="/member/login" th:action="@{/member/login}" method="post">
+<div class="field"><label for="member-email">이메일</label><input class="input" id="member-email" name="email" type="email" autocomplete="username" inputmode="email" placeholder="이메일 주소" required maxlength="254"/></div>
+<div class="field"><label for="member-password">비밀번호</label><input class="input" id="member-password" name="password" type="password" autocomplete="current-password" placeholder="비밀번호" required maxlength="128"/></div>
+<button class="btn btn-primary btn-block" type="submit">로그인</button>
+<p class="notice" id="member-login-message" role="status" aria-live="polite" hidden></p>
+<p class="hint">시연용 회원 계정: member@example.com / barotable</p>
+</form>
+<div class="member-login-links"><a data-go="lookup" href="lookup.html" th:href="@{/reservations/lookup}">비회원 예약 조회</a><span aria-hidden="true">·</span><a data-go="reserve" href="reserve.html" th:href="@{/reserve}">비회원으로 예약하기</a></div>
+</section></main>
+
+  <script src="../static/js/data.js?v=20261110a" th:src="@{/js/data.js}"></script>
+  <script src="../static/js/common.js?v=20261110a" th:src="@{/js/common.js}"></script>
+  <script src="../static/js/member.js?v=20261110a" th:src="@{/js/member.js}"></script>
+  <script src="../static/js/drag-scroll.js?v=20261110a" th:src="@{/js/drag-scroll.js}"></script>
+</body>
+</html>

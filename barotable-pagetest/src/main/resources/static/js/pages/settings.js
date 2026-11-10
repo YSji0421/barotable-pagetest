@@ -8,16 +8,16 @@
 (function () {
   const $ = s => document.querySelector(s);
   const D = BT_DATA.STORE;
-  let dirty = false, resetArm = false;
+  let dirty = false, resetArm = false, aiSetting = D.ai || 'local';
 
   function fill(st) {
+    aiSetting = st.ai || 'local';
     $('#s-open').value = st.hours.open; $('#s-close').value = st.hours.close;
     $('#s-bs').value = st.hours.breakStart; $('#s-be').value = st.hours.breakEnd;
     $('#s-min').value = st.minParty; $('#s-max').value = st.maxParty;
     $('#s-dine').value = String(st.dineMinutes); $('#s-limit').value = st.slotLimit; $('#s-noshow').value = st.noShowWarn;
     $('#s-choice').checked = st.allowSeatChoice; $('#s-n1').checked = st.notify.confirm; $('#s-n2').checked = st.notify.dayBefore;
-    const ai = st.ai === 'openai' ? 'external' : st.ai;
-    document.querySelectorAll('input[name="s-ai"]').forEach(r => { r.checked = r.value === ai; });
+
   }
   function read() {
     const num = id => Math.round(+$(id).value);
@@ -25,7 +25,7 @@
       hours: { open: $('#s-open').value, close: $('#s-close').value, breakStart: $('#s-bs').value, breakEnd: $('#s-be').value },
       minParty: num('#s-min'), maxParty: num('#s-max'), dineMinutes: num('#s-dine'), slotLimit: num('#s-limit'), noShowWarn: num('#s-noshow'),
       allowSeatChoice: $('#s-choice').checked, notify: { confirm: $('#s-n1').checked, dayBefore: $('#s-n2').checked },
-      ai: (document.querySelector('input[name="s-ai"]:checked') || {}).value || 'local'
+      ai: aiSetting
     };
   }
 

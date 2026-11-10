@@ -6,65 +6,57 @@
   <title>바로테이블 · 예약 완료</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
-  <link rel="stylesheet" href="../static/css/app.css?v=20261025a" th:href="@{/css/app.css}">
+  <link rel="stylesheet" href="../static/css/app.css?v=20261110a" th:href="@{/css/app.css}">
+  <link rel="stylesheet" href="../static/css/steps.css?v=20261110a" th:href="@{/css/steps.css}">
+  <link rel="stylesheet" href="../static/css/responsive.css?v=20261110a" th:href="@{/css/responsive.css}">
+  <link rel="stylesheet" href="../static/css/ui.css?v=20261110a" th:href="@{/css/ui.css}">
 </head>
 <!-- C-06 예약 완료와 비회원 조회 -->
 <body data-depth="0" data-screen="complete" th:data-server="true">
-  <header class="site-head">
-    <div class="wrap">
-      <a class="brand" href="index.html" th:href="@{/}" data-go="index">바로테이블</a>
-      <span class="head-store" id="head-store">바로키친 성수점</span>
-      <span class="head-spacer"></span>
-      <nav class="steps" aria-label="예약 단계">
-        <span class="done"><b>✓</b><em>날짜·인원</em></span><i></i>
-        <span class="done"><b>✓</b><em>방문 시간</em></span><i></i>
-        <span class="done"><b>✓</b><em>자리 선택</em></span><i></i>
-        <span class="done"><b>✓</b><em>예약 확인</em></span><i></i>
-        <span class="on"><b>5</b><em>완료</em></span>
-      </nav>
-    </div>
-  </header>
+<header class="site-head">
+<div class="wrap">
+<a class="brand" data-go="index" href="index.html" th:href="@{/}">바로테이블</a>
+<span class="head-store" id="head-store">바로키친 성수점</span>
+<span class="head-spacer"></span>
+<nav aria-label="예약 진행 단계" class="steps unified-steps"><span class="done" data-progress="1"><b>1</b><em>방문 일정</em></span><i></i><span class="done" data-progress="2"><b>2</b><em>테이블 선택</em></span><i></i><span class="done" data-progress="3"><b>3</b><em>예약자 정보</em></span><i></i><span aria-current="step" class="on" data-progress="4"><b>4</b><em>완료</em></span></nav>
+</div>
+</header>
+<main class="page wrap">
+<div class="grid cols-main-side" style="--side-w:360px">
+<section aria-labelledby="done-title" class="card stack" id="done-card">
+<span class="badge badge-solid" id="done-badge" style="align-self:flex-start">예약 정보 확인</span>
+<div class="row" style="justify-content:space-between;align-items:flex-start;gap:20px">
+<div class="stack" style="gap:8px;min-width:0;flex:1">
+<h1 id="done-title" style="font-size:clamp(22px,3vw,28px)">예약 내용이 확인되었습니다</h1>
+<p>예약번호 <b class="mono" id="d-no" style="color:var(--teal-deep)">BT-20261010-0031</b></p>
+</div>
 
-  <main class="page wrap">
-    <div class="grid cols-main-side" style="--side-w:360px">
-      <section class="card stack" aria-labelledby="done-title" id="done-card">
-        <span class="badge badge-solid" style="align-self:flex-start" id="done-badge">RESERVATION CONFIRMED</span>
-        <div class="row" style="justify-content:space-between;align-items:flex-start;gap:20px">
-          <div class="stack" style="gap:8px;min-width:0;flex:1">
-            <h1 id="done-title" style="font-size:clamp(22px,3vw,28px)">예약이 완료되었습니다</h1>
-            <p>예약번호 <b class="mono" id="d-no" style="color:var(--teal-deep)">BT-20261010-0031</b></p>
-          </div>
-          <figure style="margin:0;display:flex;flex-direction:column;align-items:center;gap:6px">
-            <div class="qr" aria-label="QR 코드 자리"><span class="hint">QR 코드</span></div>
-            <figcaption class="hint">매장에서 보여 주세요</figcaption>
-          </figure>
-        </div>
-        <hr class="divider">
-        <dl class="kv" id="d-info"></dl>
-        <div class="stack" style="gap:8px">
-          <p class="notice good" id="n-confirm">확인 이메일을 hello@example.com(으)로 보냈습니다.</p>
-          <p class="notice" id="n-daybefore">방문 전날 알림 이메일을 한 번 더 보냅니다.</p>
-        </div>
-        <div class="row">
-          <a class="btn btn-ghost" href="index.html" th:href="@{/}" data-go="index">처음으로</a>
-          <a class="btn btn-ghost" href="reserve.html" th:href="@{/reserve}" data-go="reserve">다른 날짜 예약</a>
-        </div>
-      </section>
+</div>
+<hr class="divider"/>
+<dl class="kv" id="d-info"></dl>
+<div class="stack" style="gap:8px">
+</div>
+<div class="row">
+<a class="btn btn-ghost" data-go="index" href="index.html" th:href="@{/}">처음으로</a>
+<a class="btn btn-ghost" data-go="reserve" href="reserve.html" th:href="@{/reserve}">다른 날짜 예약</a>
+</div>
+</section>
+<section aria-labelledby="lk-title" class="card stack">
+<div>
+<h2 id="lk-title">예약 내역 조회</h2>
+<p class="card-sub">예약번호와 연락처로 예약 내용을 확인할 수 있습니다.</p>
+</div>
 
-      <section class="card stack" aria-labelledby="lk-title">
-        <div>
-          <h2 id="lk-title">예약 조회 링크</h2>
-          <p class="card-sub">메일 속 링크로 언제든 확인하고 취소할 수 있어요</p>
-        </div>
-        <p class="notice" id="lk-sent">hello@example.com(으)로 조회 링크를 보냈습니다. 링크는 방문일이 지나면 만료됩니다.</p>
-        <a class="btn btn-primary" id="lk-open" href="lookup.html" th:href="@{/reservations/lookup}">조회 링크 열기</a>
-        <p class="hint">시연용 버튼입니다. 실제로는 메일 속 링크를 누릅니다. 링크를 잃어버려도 예약 조회 화면에서 이메일로 다시 받거나, 예약번호와 연락처로 조회할 수 있어요.</p>
-      </section>
-    </div>
-  </main>
+<a class="btn btn-primary" href="lookup.html" id="lk-open" th:href="@{/reservations/lookup}">예약 조회하기</a>
 
-  <script src="../static/js/data.js?v=20261025a" th:src="@{/js/data.js}"></script>
-  <script src="../static/js/common.js?v=20261025a" th:src="@{/js/common.js}"></script>
-  <script src="../static/js/pages/complete.js?v=20261025a" th:src="@{/js/pages/complete.js}"></script>
+</section>
+</div>
+</main>
+
+  <script src="../static/js/data.js?v=20261110a" th:src="@{/js/data.js}"></script>
+  <script src="../static/js/common.js?v=20261110a" th:src="@{/js/common.js}"></script>
+  <script src="../static/js/member.js?v=20261110a" th:src="@{/js/member.js}"></script>
+  <script src="../static/js/pages/complete.js?v=20261110a" th:src="@{/js/pages/complete.js}"></script>
+  <script src="../static/js/drag-scroll.js?v=20261110a" th:src="@{/js/drag-scroll.js}"></script>
 </body>
 </html>

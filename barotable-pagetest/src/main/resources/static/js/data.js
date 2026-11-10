@@ -82,29 +82,35 @@ window.BT_DATA = (function () {
     }
   ];
 
-  /* 점주 대시보드용 오늘(2026-10-05) 예약 */
-  const OWNER_TODAY = '2026-10-05';
-  const OWNER_NOW = '19:00';
+  /* 오늘 = 접속한 기기의 현재 날짜. 시연 예약은 모두 오늘 기준으로 만든다.
+   *   OWNER_TODAY: 점주 대시보드의 오늘, DEMO_DATE: 손님 화면 시연용 다른 날짜(오늘 + 5일) */
+  const isoOf = dt => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+  const NOW_DATE = new Date();
+  const OWNER_TODAY = isoOf(NOW_DATE);
+  const DEMO_DATE = isoOf(new Date(NOW_DATE.getFullYear(), NOW_DATE.getMonth(), NOW_DATE.getDate() + 5));
+  const TD = OWNER_TODAY.replace(/-/g, ''), DD = DEMO_DATE.replace(/-/g, '');
+  /* 기준 시각 = 화면을 연 순간의 현재 시각 (HH:MM) */
+  const OWNER_NOW = `${String(NOW_DATE.getHours()).padStart(2, '0')}:${String(NOW_DATE.getMinutes()).padStart(2, '0')}`;
   const OWNER_RESERVATIONS = [
-    { no: 'BT-20261005-0008', time: '12:00', name: '김민지', phone: '010-2345-1111', email: 'minji@example.com', party: 2, table: 'T01', status: 'visited',  request: '' },
-    { no: 'BT-20261005-0009', time: '12:30', name: '박준호', phone: '010-3456-2222', email: 'junho@example.com', party: 4, table: 'T04', status: 'visited',  request: '' },
-    { no: 'BT-20261005-0010', time: '13:00', name: '이서연', phone: '010-4567-3333', email: 'seoyeon@example.com', party: 6, table: 'T08', status: 'visited', request: '유아 의자 1개' },
-    { no: 'BT-20261005-0014', time: '17:30', name: '정하늘', phone: '010-1111-4444', email: 'sky@example.com', party: 2, table: 'T05', status: 'visited',  request: '' },
-    { no: 'BT-20261005-0016', time: '18:00', name: '최도윤', phone: '010-2222-5555', email: 'doyun@example.com', party: 4, table: 'T07', status: 'visited',  request: '' },
-    { no: 'BT-20261005-0018', time: '18:30', name: '한지우', phone: '010-5555-1212', email: 'jiwoo@example.com', party: 2, table: 'T09', status: 'booked',   request: '' },
-    { no: 'BT-20261005-0021', time: '19:00', name: '홍길동', phone: '010-0000-0000', email: 'hello@example.com', party: 4, table: 'T03', status: 'booked',   request: '아이 의자' },
-    { no: 'BT-20261005-0022', time: '19:00', name: '윤채원', phone: '010-7777-8888', email: 'chaewon@example.com', party: 8, table: 'R01', status: 'booked', request: '생일 케이크 보관 부탁드려요' },
-    { no: 'BT-20261005-0025', time: '19:30', name: '강태민', phone: '010-8888-9999', email: 'taemin@example.com', party: 2, table: 'T02', status: 'booked',   request: '' },
-    { no: 'BT-20261005-0027', time: '20:00', name: '오수아', phone: '010-1212-3434', email: 'sua@example.com', party: 4, table: 'T23', status: 'booked',   request: '테라스 담요' },
-    { no: 'BT-20261005-0028', time: '20:00', name: '서예준', phone: '010-5656-7878', email: 'yejun@example.com', party: 2, table: 'T06', status: 'booked',   request: '' },
-    { no: 'BT-20261005-0030', time: '20:30', name: '문가은', phone: '010-9090-1010', email: 'gaeun@example.com', party: 6, table: 'R02', status: 'booked',   request: '' },
-    /* 손님 화면 시연용 다른 날짜 예약 (date가 있는 항목은 점주 대시보드의 오늘 목록에 안 나옴) */
-    { no: 'BT-20261010-0011', date: '2026-10-10', time: '12:00', name: '조하린', phone: '010-3131-2020', email: 'harin@example.com', party: 2, table: 'T01', status: 'booked', request: '' },
-    { no: 'BT-20261010-0024', date: '2026-10-10', time: '18:00', name: '배도현', phone: '010-4242-3030', email: 'dohyun@example.com', party: 2, table: 'T05', status: 'booked', request: '' },
-    { no: 'BT-20261010-0026', date: '2026-10-10', time: '18:30', name: '신유나', phone: '010-5353-4040', email: 'yuna@example.com', party: 6, table: 'R02', status: 'booked', request: '' },
-    { no: 'BT-20261010-0029', date: '2026-10-10', time: '19:00', name: '임서진', phone: '010-6464-5050', email: 'seojin@example.com', party: 2, table: 'T06', status: 'booked', request: '' },
-    { no: 'BT-20261010-0033', date: '2026-10-10', time: '19:30', name: '권나래', phone: '010-7575-6060', email: 'narae@example.com', party: 2, table: 'T22', status: 'booked', request: '야외 자리' },
-    { no: 'BT-20261010-0035', date: '2026-10-10', time: '20:00', name: '남궁현', phone: '010-8686-7070', email: 'hyun@example.com', party: 2, table: 'T09', status: 'booked', request: '' }
+    { no: `BT-${TD}-0008`, time: '12:00', name: '김민지', phone: '010-2345-1111', email: 'minji@example.com', party: 2, table: 'T01', status: 'visited',  request: '' },
+    { no: `BT-${TD}-0009`, time: '12:30', name: '박준호', phone: '010-3456-2222', email: 'junho@example.com', party: 4, table: 'T04', status: 'visited',  request: '' },
+    { no: `BT-${TD}-0010`, time: '13:00', name: '이서연', phone: '010-4567-3333', email: 'seoyeon@example.com', party: 6, table: 'T08', status: 'visited', request: '유아 의자 1개' },
+    { no: `BT-${TD}-0014`, time: '17:30', name: '정하늘', phone: '010-1111-4444', email: 'sky@example.com', party: 2, table: 'T05', status: 'visited',  request: '' },
+    { no: `BT-${TD}-0016`, time: '18:00', name: '최도윤', phone: '010-2222-5555', email: 'doyun@example.com', party: 4, table: 'T07', status: 'visited',  request: '' },
+    { no: `BT-${TD}-0018`, time: '18:30', name: '한지우', phone: '010-5555-1212', email: 'jiwoo@example.com', party: 2, table: 'T09', status: 'booked',   request: '' },
+    { no: `BT-${TD}-0021`, time: '19:00', name: '홍길동', phone: '010-0000-0000', email: 'hello@example.com', party: 4, table: 'T03', status: 'booked',   request: '아이 의자' },
+    { no: `BT-${TD}-0022`, time: '19:00', name: '윤채원', phone: '010-7777-8888', email: 'chaewon@example.com', party: 8, table: 'R01', status: 'booked', request: '생일 케이크 보관 부탁드려요' },
+    { no: `BT-${TD}-0025`, time: '19:30', name: '강태민', phone: '010-8888-9999', email: 'taemin@example.com', party: 2, table: 'T02', status: 'booked',   request: '' },
+    { no: `BT-${TD}-0027`, time: '20:00', name: '오수아', phone: '010-1212-3434', email: 'sua@example.com', party: 4, table: 'T23', status: 'booked',   request: '테라스 담요' },
+    { no: `BT-${TD}-0028`, time: '20:00', name: '서예준', phone: '010-5656-7878', email: 'yejun@example.com', party: 2, table: 'T06', status: 'booked',   request: '' },
+    { no: `BT-${TD}-0030`, time: '20:30', name: '문가은', phone: '010-9090-1010', email: 'gaeun@example.com', party: 6, table: 'R02', status: 'booked',   request: '' },
+    /* 손님 화면 시연용 다른 날짜(DEMO_DATE) 예약 (date가 있는 항목은 점주 대시보드의 오늘 목록에 안 나옴) */
+    { no: `BT-${DD}-0011`, date: DEMO_DATE, time: '12:00', name: '조하린', phone: '010-3131-2020', email: 'harin@example.com', party: 2, table: 'T01', status: 'booked', request: '' },
+    { no: `BT-${DD}-0024`, date: DEMO_DATE, time: '18:00', name: '배도현', phone: '010-4242-3030', email: 'dohyun@example.com', party: 2, table: 'T05', status: 'booked', request: '' },
+    { no: `BT-${DD}-0026`, date: DEMO_DATE, time: '18:30', name: '신유나', phone: '010-5353-4040', email: 'yuna@example.com', party: 6, table: 'R02', status: 'booked', request: '' },
+    { no: `BT-${DD}-0029`, date: DEMO_DATE, time: '19:00', name: '임서진', phone: '010-6464-5050', email: 'seojin@example.com', party: 2, table: 'T06', status: 'booked', request: '' },
+    { no: `BT-${DD}-0033`, date: DEMO_DATE, time: '19:30', name: '권나래', phone: '010-7575-6060', email: 'narae@example.com', party: 2, table: 'T22', status: 'booked', request: '야외 자리' },
+    { no: `BT-${DD}-0035`, date: DEMO_DATE, time: '20:00', name: '남궁현', phone: '010-8686-7070', email: 'hyun@example.com', party: 2, table: 'T09', status: 'booked', request: '' }
   ];
   /* 연락처별 누적 노쇼 횟수 */
   const NOSHOW_HISTORY = { '010-5555-1212': 2, '010-9090-1010': 1 };
@@ -128,5 +134,11 @@ window.BT_DATA = (function () {
     ]
   };
 
-  return { STORE, FLOORS, OWNER_TODAY, OWNER_NOW, OWNER_RESERVATIONS, NOSHOW_HISTORY, ADMIN };
+  /* 회원 로그인 (화면 확인용 시연 계정)
+   *   실제 구현: POST /member/login (Spring Security, 역할 MEMBER), 비밀번호는 서버에서 해시로 비교 */
+  const MEMBERS = [
+    { email: 'member@example.com', password: 'barotable', name: '김바로', phone: '010-1234-5678' }
+  ];
+
+  return { STORE, FLOORS, OWNER_TODAY, DEMO_DATE, OWNER_NOW, OWNER_RESERVATIONS, NOSHOW_HISTORY, ADMIN, MEMBERS };
 })();

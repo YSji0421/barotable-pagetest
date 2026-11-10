@@ -6,71 +6,68 @@
   <title>바로테이블 · 예약 확인</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
-  <link rel="stylesheet" href="../static/css/app.css?v=20261025a" th:href="@{/css/app.css}">
+  <link rel="stylesheet" href="../static/css/app.css?v=20261110a" th:href="@{/css/app.css}">
+  <link rel="stylesheet" href="../static/css/steps.css?v=20261110a" th:href="@{/css/steps.css}">
+  <link rel="stylesheet" href="../static/css/confirm.css?v=20261110a" th:href="@{/css/confirm.css}">
+  <link rel="stylesheet" href="../static/css/responsive.css?v=20261110a" th:href="@{/css/responsive.css}">
+  <link rel="stylesheet" href="../static/css/ui.css?v=20261110a" th:href="@{/css/ui.css}">
 </head>
 <!-- C-04 / C-05 예약자 정보와 최종 확인 -->
 <body data-depth="0" data-screen="confirm" th:data-server="true">
-  <header class="site-head">
-    <div class="wrap">
-      <a class="brand" href="index.html" th:href="@{/}" data-go="index">바로테이블</a>
-      <span class="head-store" id="head-store">바로키친 성수점</span>
-      <span class="head-spacer"></span>
-      <nav class="steps" aria-label="예약 단계">
-        <span class="done"><b>✓</b><em>날짜·인원</em></span><i></i>
-        <span class="done"><b>✓</b><em>방문 시간</em></span><i></i>
-        <span class="done"><b>✓</b><em>자리 선택</em></span><i></i>
-        <span class="on"><b>4</b><em>예약 확인</em></span><i></i>
-        <span class=""><b>5</b><em>완료</em></span>
-      </nav>
-    </div>
-  </header>
+<header class="site-head">
+<div class="wrap">
+<a class="brand" data-go="index" href="index.html" th:href="@{/}">바로테이블</a>
+<span class="head-store" id="head-store">바로키친 성수점</span>
+<span class="head-spacer"></span>
+<nav aria-label="예약 진행 단계" class="steps unified-steps"><span class="done" data-progress="1"><b>1</b><em>방문 일정</em></span><i></i><span class="done" data-progress="2"><b>2</b><em>테이블 선택</em></span><i></i><span aria-current="step" class="on" data-progress="3"><b>3</b><em>예약자 정보</em></span><i></i><span data-progress="4"><b>4</b><em>완료</em></span></nav>
+</div>
+</header>
+<main class="page wrap">
+<div class="page-title">
+<div>
+<h1>예약자 정보를 입력해 주세요</h1>
+<p>예약 내용을 확인한 후 연락처를 입력하면 됩니다.</p>
+</div>
+<a class="btn btn-ghost btn-sm" data-go="reserve" href="reserve.html" th:href="@{/reserve}">← 좌석 다시 고르기</a>
+</div>
+<div class="grid cols-2">
+<form id="booking-contact-form" novalidate="novalidate"><section aria-labelledby="info-title" class="card stack">
+<div>
+<h2 id="info-title">예약자 정보</h2>
+<p class="card-sub">예약 확인에 사용할 이름과 연락처를 입력해 주세요.</p>
+</div>
+<div class="form-row">
+<div class="field"><label for="c-name">예약자</label><input autocomplete="name" class="input" id="c-name" inputmode="text" maxlength="40" placeholder="성함을 입력해 주세요" required="" type="text"/></div>
+<div class="field"><label for="c-phone">연락처</label><input autocomplete="tel" class="input mono" id="c-phone" inputmode="tel" maxlength="13" placeholder="010-1234-5678" required="" type="tel"/></div>
+</div>
+<div class="field">
+<label for="c-email">이메일 (선택)</label>
+<input autocomplete="email" class="input" id="c-email" placeholder="email@example.com (선택)" type="email"/>
+</div>
+<div class="field">
+<label for="c-req">요청사항 <span class="faint">(선택)</span></label>
+<textarea class="textarea" id="c-req" maxlength="200" placeholder="예) 아이 의자 1개 부탁드려요"></textarea>
+</div>
+<label class="check" for="c-agree">
+<input id="c-agree" type="checkbox"/>
+<span><b>개인정보 수집·이용에 동의합니다</b> <span class="faint">(필수)</span><br/>
+<span class="hint">입력한 이름과 연락처는 예약 접수 및 확인 안내에 사용됩니다.</span></span>
+</label>
+</section><p class="hint field-error" hidden="" id="contact-error" role="alert"></p></form>
+<section aria-labelledby="sum-title" class="card card-dark stack">
+<h2 id="sum-title">예약 내용 확인</h2>
+<dl class="kv" id="summary"></dl>
+<div class="map-scroll" style="border-radius:10px"><div id="mini-map"></div></div>
+<button class="btn btn-primary btn-block" form="booking-contact-form" id="finish-booking" type="submit">예약 확정하기</button>
+</section>
+</div>
+</main>
 
-  <main class="page wrap">
-    <div class="page-title">
-      <div>
-        <h1>예약자 정보와 최종 확인</h1>
-        <p>선택한 테이블과 개인정보 수집 동의를 한 화면에서 확인합니다.</p>
-      </div>
-      <a class="btn btn-ghost btn-sm" href="reserve.html" th:href="@{/reserve}" data-go="reserve">← 좌석 다시 고르기</a>
-    </div>
-
-    <div class="grid cols-2">
-      <section class="card stack" aria-labelledby="info-title">
-        <div>
-          <h2 id="info-title">예약자 확인</h2>
-          <p class="card-sub">첫 화면에서 입력한 이름과 전화번호를 사용합니다.</p>
-        </div>
-        <div class="form-row">
-          <div class="field"><label for="c-name">예약자</label><input class="input" id="c-name" value="홍길동" readonly></div>
-          <div class="field"><label for="c-phone">연락처</label><input class="input mono" id="c-phone" value="010-0000-0000" readonly></div>
-        </div>
-        <div class="field">
-          <label for="c-email">이메일 <span class="faint">(예약 확인 · 방문 전날 알림)</span></label>
-          <input class="input" id="c-email" type="email" autocomplete="email" value="hello@example.com">
-        </div>
-        <div class="field">
-          <label for="c-req">요청사항 <span class="faint">(선택)</span></label>
-          <textarea class="textarea" id="c-req" maxlength="200" placeholder="예) 아이 의자 1개 부탁드려요"></textarea>
-        </div>
-        <label class="check" for="c-agree">
-          <input type="checkbox" id="c-agree">
-          <span><b>개인정보 수집·이용에 동의합니다</b> <span class="faint">(필수)</span><br>
-            <span class="hint">수집 항목: 이름, 연락처, 이메일 · 목적: 예약 확인과 알림 발송 · 보관: 방문일로부터 90일 후 파기</span></span>
-        </label>
-      </section>
-
-      <section class="card card-dark stack" aria-labelledby="sum-title">
-        <h2 id="sum-title">예약 내용 확인</h2>
-        <dl class="kv" id="summary"></dl>
-        <div class="map-scroll" style="border-radius:10px"><div id="mini-map"></div></div>
-        <a class="btn btn-primary btn-block" href="complete.html" th:href="@{/reserve/complete}" data-go="complete">예약 확정</a>
-      </section>
-    </div>
-  </main>
-
-  <script src="../static/js/data.js?v=20261025a" th:src="@{/js/data.js}"></script>
-  <script src="../static/js/common.js?v=20261025a" th:src="@{/js/common.js}"></script>
-  <script src="../static/js/seatmap.js?v=20261025a" th:src="@{/js/seatmap.js}"></script>
-  <script src="../static/js/pages/confirm.js?v=20261025a" th:src="@{/js/pages/confirm.js}"></script>
+  <script src="../static/js/data.js?v=20261110a" th:src="@{/js/data.js}"></script>
+  <script src="../static/js/common.js?v=20261110a" th:src="@{/js/common.js}"></script>
+  <script src="../static/js/member.js?v=20261110a" th:src="@{/js/member.js}"></script>
+  <script src="../static/js/seatmap.js?v=20261110a" th:src="@{/js/seatmap.js}"></script>
+  <script src="../static/js/pages/confirm.js?v=20261110a" th:src="@{/js/pages/confirm.js}"></script>
+  <script src="../static/js/drag-scroll.js?v=20261110a" th:src="@{/js/drag-scroll.js}"></script>
 </body>
 </html>

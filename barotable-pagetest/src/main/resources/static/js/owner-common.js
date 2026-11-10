@@ -5,6 +5,7 @@
   const current = document.body.dataset.screen;
   const nav = [
     ['owner-dashboard', '대시보드', 'grid'],
+    ['owner-schedule', '예약 시간표', 'clock'],
     ['owner-guests', '손님 배정', 'users'],
     ['owner-editor', '좌석도 편집', 'layout'],
     ['owner-settings', '운영 조건', 'sliders']
@@ -30,7 +31,7 @@
     <a class="side-shortcut" href="#owner-reservations">${icon('list')}<span>예약 목록</span></a>
     <a class="side-shortcut" href="#walkin">${icon('plus')}<span>워크인 접수</span></a>` : '';
   side.innerHTML = `
-    <div class="side-identity"><a class="brand" data-go="owner-dashboard" href="${BT.url('owner-dashboard')}">바로테이블<span class="side-brand-dot">.</span></a>
+    <div class="side-identity"><a class="brand" data-go="owner-dashboard" href="${BT.url('owner-dashboard')}">바로테이블</a>
        <span class="side-role">OWNER CONSOLE</span></div>
     <div class="side-store"><span class="side-avatar">B</span><span class="side-store-text"><b>${BT.esc(BT.store().name)}</b><small>매장 관리자</small></span></div>
     <div class="side-section-title">점주 메뉴</div>
@@ -39,7 +40,7 @@
     <span class="grow"></span>
     <div class="side-bottom"><a data-go="index" href="${BT.url('index')}">${icon('eye')}<span>손님 화면 보기</span></a>
       <a data-go="owner-login" href="${BT.url('owner-login')}">${icon('logout')}<span>로그아웃</span></a></div>
-    <div class="side-who">owner@example.com</div>`;
+    <div class="side-who">매장 관리자</div>`;
   // Quick links are real in-page anchors. Keep them within the embedded document.
   side.querySelectorAll('.side-shortcut').forEach(a => a.addEventListener('click', e => {
     const target=document.getElementById(a.getAttribute('href').slice(1));

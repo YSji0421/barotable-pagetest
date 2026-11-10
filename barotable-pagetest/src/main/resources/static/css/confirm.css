@@ -1,0 +1,6 @@
+#booking-contact-form{display:flex;flex-direction:column;gap:17px}
+#booking-contact-form .form-row{gap:12px}
+#booking-contact-form .input{background:#fff;border-color:#e0e2e3}
+#booking-contact-form .input:focus{border-color:#526B86;box-shadow:0 0 0 3px rgba(82, 107, 134,.09)}
+#booking-contact-form .field-error{margin:0;color:#aa3c3c;font-weight:600}
+@media(max-width:760px){#booking-contact-form .form-row{display:grid;grid-template-columns:1fr}}

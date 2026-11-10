@@ -1,4 +1,4 @@
-/* O-02 점주 대시보드 (기준 시각 BT.NOW = 19:00 하드코딩)
+/* O-02 점주 대시보드 (기준 시각 BT.NOW = 화면을 연 순간의 현재 시각)
  * 동작: 층 탭, 상태 필터, 예약 선택(목록 · 좌석도 · 시간표), 방문 완료, 노쇼 처리/되돌리기, 테이블 옮기기, 워크인 배정
  * 바뀐 내용은 BT.updateReservation / BT.addReservation 으로 sessionStorage에 저장된다.
  * 자리 판단은 규칙으로만 한다: 좌석 수 · 구역 인원 조건(BT.seatRule) + 이용 시간 겹침(BT.tableClash)
@@ -7,7 +7,8 @@
   const $ = s => document.querySelector(s);
   // 시간표는 기본적으로 현재 전후 몇 시간과 첫 번째 층만 보여 줍니다.
   // 예약 필터/선택과 독립적으로 유지되며 전체 시간으로 확장할 수 있습니다.
-  const timelineView = { period: 'around', floor: null, page: 0, pageSize: 6 };
+  const scheduleScreen = document.body.dataset.screen === 'owner-schedule';
+  const timelineView = { period: scheduleScreen ? 'full' : 'around', floor: scheduleScreen ? 'all' : null, page: 0, pageSize: scheduleScreen ? 999 : 6 };
   function timeWindow() {
     const hours = BT.store().hours;
     const opening = BT.toMin(hours.open), closing = BT.toMin(hours.close);
@@ -26,6 +27,7 @@
     const wanted=floor.value || timelineView.floor;
     floor.innerHTML=`<option value="all">전체 층</option>${fl.map(f=>`<option value="${f.id}">${BT.esc(f.name)}</option>`).join('')}`;
     floor.value=timelineView.floor;
+    const dateInput=$('#tt-date'); if(dateInput) dateInput.value=scheduleDate;
     const win=timeWindow();
     $('#tt-range-label').textContent=BT.toHHMM(win.start)+'–'+BT.toHHMM(win.end);
     return win;
@@ -33,9 +35,10 @@
 
   const D = BT_DATA, fl = BT.floors(), st = BT.store();
   const TODAY = D.OWNER_TODAY, NOW = BT.toMin(BT.NOW), DINE = st.dineMinutes;
-  const S = { floor: fl[0].id, filter: 'all', sel: 'BT-20261005-0021', walk: 2, walkOpen: false, listExpanded: false, mapExpanded: false };
+  let scheduleDate = TODAY;
+  const S = { floor: fl[0].id, filter: 'all', sel: `BT-${TODAY.replace(/-/g, '')}-0021`, walk: 2, walkOpen: false, listExpanded: false, mapExpanded: false };
 
-  const list = () => BT.reservations().filter(r => r.date === TODAY).sort((a, b) => a.time.localeCompare(b.time));
+  const list = () => BT.reservations().filter(r => r.date === (scheduleScreen ? scheduleDate : TODAY)).sort((a, b) => a.time.localeCompare(b.time));
   const view = r => r.status === 'cancelled' ? 'cancelled' : r.status === 'noshow' ? 'noshow' : r.status === 'visited' ? 'visited'
     : (BT.toMin(r.time) <= NOW ? 'booked' : 'waiting');
   const LABEL = { booked: ['확정', 'badge-teal'], visited: ['방문 완료', 'badge-blue'], waiting: ['대기', 'badge-amber'], noshow: ['노쇼', 'badge-coral'], cancelled: ['취소', 'badge-gray'] };
@@ -74,9 +77,9 @@
     $('#floor-tabs').innerHTML = fl.map(f => `<button type="button" role="tab" class="tab ${f.id === S.floor ? 'on' : ''}" data-f="${f.id}" aria-selected="${f.id === S.floor}">${BT.esc(f.name)}</button>`).join('');
     document.querySelectorAll('#floor-tabs .tab').forEach(b => b.addEventListener('click', () => { S.floor = b.dataset.f; render(); }));
     SeatMap.render($('#map'), fl.find(f => f.id === S.floor), {
-      selected: sel ? sel.table : null,
+      selected: sel ? sel.table : String(S.sel || '').replace('table:', '') || null,
       statusOf: t => tableState(t.id, RES),
-      onSelect: t => { const r = resForTable(t.id, RES); S.sel = r ? r.no : 'table:' + t.id; render(); }
+      onSelect: t => { const r = resForTable(t.id, RES); S.sel = r ? r.no : 'table:' + t.id; if (timelineView.floor !== 'all' && timelineView.floor !== t.floor) { timelineView.floor = t.floor; timelineView.page = 0; } render(); }
     });
 
     /* 목록 */
@@ -97,7 +100,7 @@
         <td>${r.party}명</td><td class="mono">${r.table}</td><td>${pill(r)}</td><td class="muted">${BT.esc(r.request || '-')}</td></tr>`;
     }).join('') : `<tr><td colspan="6" class="muted" style="text-align:center;padding:20px">해당하는 예약이 없어요</td></tr>`;
     document.querySelectorAll('#res-rows tr[data-no]').forEach(tr => {
-      const pick = () => { S.sel = tr.dataset.no; const r = RES.find(x => x.no === S.sel), t = BT.findTable(r.table, fl); if (t) S.floor = t.floor; render(); };
+      const pick = () => { S.sel = tr.dataset.no; const r = RES.find(x => x.no === S.sel), t = r && BT.findTable(r.table, fl); if (t) { S.floor = t.floor; if (timelineView.floor !== 'all' && timelineView.floor !== t.floor) { timelineView.floor = t.floor; timelineView.page = 0; } } render(); };
       tr.addEventListener('click', pick);
       tr.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
     });
@@ -108,6 +111,8 @@
     const filteredTables = BT.allTables(fl).filter(t => timelineView.floor === 'all' || t.floor === timelineView.floor);
     const pageCount = Math.max(1, Math.ceil(filteredTables.length / timelineView.pageSize));
     timelineView.page = Math.min(pageCount - 1, timelineView.page);
+    const focusedIndex = focus ? filteredTables.findIndex(t => t.id === focus) : -1;
+    if (focusedIndex >= 0 && (focusedIndex < timelineView.page * timelineView.pageSize || focusedIndex >= (timelineView.page + 1) * timelineView.pageSize)) timelineView.page = Math.floor(focusedIndex / timelineView.pageSize);
     const firstRow = timelineView.page * timelineView.pageSize;
     const shownTables = filteredTables.slice(firstRow, firstRow + timelineView.pageSize);
     $('#tt-page-summary').textContent = `${filteredTables.length ? firstRow + 1 : 0}–${Math.min(firstRow + shownTables.length, filteredTables.length)} / ${filteredTables.length} 테이블`;
@@ -115,7 +120,7 @@
     $('#tt-next').disabled = timelineView.page >= pageCount - 1;
     Timetable.render($('#timetable'), {
       tables: shownTables,
-      reservations: RES, date: TODAY, focus, soon: true, window: timeRange, compact: true,
+      reservations: RES, date: scheduleScreen ? scheduleDate : TODAY, focus, soon: !(scheduleScreen && scheduleDate !== TODAY), showNow: !(scheduleScreen && scheduleDate !== TODAY), window: timeRange, compact: !scheduleScreen,
       onPick: (r, tableId) => {
         const t = BT.findTable(tableId, fl);
         if (t) S.floor = t.floor;
@@ -124,8 +129,8 @@
         render();
       }
     });
-    const ss = Timetable.soonSummary(RES, TODAY);
-    $('#soon-status').textContent = ss.text; $('#soon-status').classList.toggle('on', ss.soon);
+    const ss = Timetable.soonSummary(RES, scheduleScreen ? scheduleDate : TODAY);
+    $('#soon-status').textContent = scheduleScreen && scheduleDate !== TODAY ? `선택한 날짜의 예약 ${RES.length}건` : ss.text; $('#soon-status').classList.toggle('on', !scheduleScreen || scheduleDate === TODAY ? ss.soon : false);
 
     renderDetail(sel, RES);
     renderWalkin(RES);
@@ -221,7 +226,7 @@
   $('#wk-minus').addEventListener('click', () => { S.walk--; render(); });
   $('#wk-plus').addEventListener('click', () => { S.walk++; render(); });
   $('#wk-find').addEventListener('click', () => { S.walkOpen = true; render(); });
-  $('#demo-reset').addEventListener('click', () => { BT.resetReservations(); S.sel = 'BT-20261005-0021'; S.walkOpen = false; BT.toast('시연 데이터를 처음 상태로 되돌렸어요'); render(); });
+  $('#demo-reset').addEventListener('click', () => { BT.resetReservations(); S.sel = `BT-${TODAY.replace(/-/g, '')}-0021`; S.walkOpen = false; BT.toast('시연 데이터를 처음 상태로 되돌렸어요'); render(); });
 
   $('#tt-period').addEventListener('click',e => {
     const btn = e.target.closest('[data-period]');
@@ -230,6 +235,8 @@
     render();
   });
   $('#tt-floor').addEventListener('change',e => {timelineView.floor=e.target.value;timelineView.page=0;render();});
+  const scheduleDateInput = $('#tt-date');
+  if (scheduleDateInput) scheduleDateInput.addEventListener('change', e => { if(!e.target.value)return; scheduleDate=e.target.value; timelineView.page=0; S.sel=''; render(); });
   $('#tt-prev').addEventListener('click',()=>{timelineView.page=Math.max(0,timelineView.page-1);render();});
   $('#tt-next').addEventListener('click',()=>{timelineView.page++;render();});
   $('#res-show-all').addEventListener('click',()=>{S.listExpanded=!S.listExpanded;render();});

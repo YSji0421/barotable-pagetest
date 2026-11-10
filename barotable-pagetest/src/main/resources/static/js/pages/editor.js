@@ -105,6 +105,27 @@
     b.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', b.dataset.add + ':' + b.dataset.preset); e.dataTransfer.effectAllowed = 'copy'; });
   });
 
+    function tableChairMarkup(t) {
+    const count = Math.max(1, Math.min(12, Number(t.seats) || 2));
+    const chairs = [];
+    const add = (left, top, rotation = 0) => chairs.push(`<i class="table-chair" aria-hidden="true" style="left:${left};top:${top};transform:translate(-50%,-50%) rotate(${rotation}deg)"></i>`);
+    if (t.shape === 'round') {
+      for (let i = 0; i < count; i++) {
+        const deg = -90 + i * 360 / count, rad = deg * Math.PI / 180;
+        const x = 50 + Math.cos(rad) * 50, y = 50 + Math.sin(rad) * 50;
+        const dx = Math.cos(rad) * 7, dy = Math.sin(rad) * 7;
+        add(`calc(${x.toFixed(2)}% + ${dx.toFixed(1)}px)`, `calc(${y.toFixed(2)}% + ${dy.toFixed(1)}px)`, (deg + 90 + 360) % 360);
+      }
+    } else if (t.shape === 'bar') {
+      for (let i = 0; i < count; i++) add(`${((i + 1) / (count + 1) * 100).toFixed(2)}%`, 'calc(100% + 7px)', 0);
+    } else {
+      const topCount = Math.ceil(count / 2), bottomCount = Math.floor(count / 2);
+      for (let i = 0; i < topCount; i++) add(`${((i + 1) / (topCount + 1) * 100).toFixed(2)}%`, 'calc(0% - 7px)', 0);
+      for (let i = 0; i < bottomCount; i++) add(`${((i + 1) / (bottomCount + 1) * 100).toFixed(2)}%`, 'calc(100% + 7px)', 0);
+    }
+    return chairs.join('');
+  }
+
   /* ---------- 캔버스 ---------- */
   function renderCanvas() {
     const f = floor(), host = $('#canvas'); host.innerHTML = '';
@@ -128,7 +149,7 @@
     f.tables.forEach(t => {
       const sel = isSel('table', t.id);
       const el = document.createElement('div'); el.className = `map-table shape-${t.shape} st-available ed-item ${sel ? 'ed-sel' : ''}`; place(el, t);
-      el.innerHTML = `<strong>${BT.esc(t.id)}</strong><span>${t.seats}인</span>${sel ? '<span class="ed-handle" data-resize="1"></span>' : ''}`;
+      el.innerHTML = `${tableChairMarkup(t)}<strong>${BT.esc(t.id)}</strong><span>${t.seats}인석</span>${sel ? '<span class="ed-handle" data-resize="1"></span>' : ''}`;
       bindDrag(el, t, 'table'); cv.appendChild(el);
     });
     cv.addEventListener('pointerdown', e => { if (e.target === cv) { S.sel = null; render(); } });
@@ -275,6 +296,7 @@
         </div>
         <div class="field"><label for="p-tags">특징 태그</label><input class="input" id="p-tags" value="${BT.esc(t.tags.join(', '))}" placeholder="예: 창가, 조용함"></div>
         <label class="check" style="padding:8px 10px"><input type="checkbox" id="p-comb" ${t.combinable ? 'checked' : ''}><span>옆 테이블과 붙일 수 있음</span></label>
+        <div class="table-custom-note"><strong>고객 예약 화면에 반영됩니다</strong><p>테이블 모양과 좌석 수에 따라 의자 표시가 자동으로 바뀝니다. 위치·크기·특징을 수정한 뒤 저장하면 고객 좌석도에도 같은 모습으로 표시됩니다.</p></div>
         ${sizeAndRotate(t, 'table')}`;
       if (!locked) $('#p-id').addEventListener('change', e => {
         const v = e.target.value.trim().toUpperCase(), msg = $('#p-id-msg');
@@ -300,8 +322,8 @@
 
   /* ---------- 저장 ----------
    * BT.floors()가 'bt.floors'를 읽으므로 저장하면 손님 좌석도와 대시보드에 그대로 반영된다 */
-  const saveFloors = fl => { try { sessionStorage.setItem('bt.floors', JSON.stringify(fl)); } catch (e) {} };
-  const resetFloors = () => { try { sessionStorage.removeItem('bt.floors'); } catch (e) {} };
+  const saveFloors = fl => BT.sset('bt.floors', fl);
+  const resetFloors = () => BT.sremove('bt.floors');
   function validate() {
     const out = [], ids = {};
     FL.forEach(f => f.tables.forEach(t => { (ids[t.id] = ids[t.id] || []).push(f.name); }));

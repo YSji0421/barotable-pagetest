@@ -1,16 +1,18 @@
 /* =========================================================
  * 바로테이블 화면 설계 확인용 - 공통
- * 구현 기능: 화면 이동, 10월 날짜 / 영업시간 슬롯 생성, (AI 채팅용) 시간 확인, 예약 상태 변경 · 좌석 규칙
+ * 구현 기능: 화면 이동, 달력 날짜 / 영업시간 슬롯 생성, (AI 채팅용) 시간 확인, 예약 상태 변경 · 좌석 규칙
  * 나머지 데이터는 모두 하드코딩
  * ========================================================= */
 window.BT = (function () {
   const D = window.BT_DATA;
-  const YEAR = 2026, MONTH = 10;
-  const TODAY = '2026-10-05';
+  /* 오늘·기준 시각은 기기의 현재 날짜와 시각(data.js OWNER_TODAY, OWNER_NOW) */
+  const TODAY = D.OWNER_TODAY;
+  const YEAR = Number(TODAY.slice(0, 4)), MONTH = Number(TODAY.slice(5, 7));
   const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
 
   function sget(key, fallback) { try { const v = sessionStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } }
   function sset(key, val) { try { sessionStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+  function sremove(key) { try { sessionStorage.removeItem(key); } catch (e) {} }
 
   /* 운영 조건(O-04)에서 저장한 값('bt.store')이 있으면 하드코딩 값 위에 덮어쓴다.
    * 실제 구현: PUT /api/owner/settings -> GET /api/stores/{slug} */
@@ -20,7 +22,7 @@ window.BT = (function () {
     return Object.assign({}, D.STORE, o, { hours: Object.assign({}, D.STORE.hours, o.hours), notify: Object.assign({}, D.STORE.notify, o.notify) });
   }
   const saveStore = o => sset('bt.store', o);
-  const resetStore = () => { try { sessionStorage.removeItem('bt.store'); } catch (e) {} };
+  const resetStore = () => sremove('bt.store');
   /* 좌석도 편집기(editor.js)에서 저장한 배치('bt.floors')가 있으면 그것을, 없으면 하드코딩 배치를 쓴다.
    * 실제 구현: PUT /api/owner/layout -> GET /api/stores/{slug}/layout */
   const floors = () => JSON.parse(JSON.stringify(sget('bt.floors', null) || D.FLOORS));
@@ -35,10 +37,10 @@ window.BT = (function () {
   /* ---------- 화면 이동 ---------- */
   const ROUTES = {
     'index': ['index.html', '/'], 'reserve': ['reserve.html', '/reserve'], 'confirm': ['confirm.html', '/reserve/confirm'],
-    'complete': ['complete.html', '/reserve/complete'], 'lookup': ['lookup.html', '/reservations/lookup'], 'admin': ['admin/dashboard.html', '/admin'],
+    'complete': ['complete.html', '/reserve/complete'], 'lookup': ['lookup.html', '/reservations/lookup'], 'member-login': ['member-login.html', '/member/login'], 'admin': ['admin/dashboard.html', '/admin'],
     'owner-login': ['owner/login.html', '/owner/login'], 'owner-dashboard': ['owner/dashboard.html', '/owner/dashboard'],
     'owner-editor': ['owner/editor.html', '/owner/seat-map'], 'owner-settings': ['owner/settings.html', '/owner/settings'],
-    'owner-guests': ['owner/guests.html', '/owner/guests']
+    'owner-guests': ['owner/guests.html', '/owner/guests'], 'owner-schedule': ['owner/schedule.html', '/owner/schedule']
   };
   function url(name) {
     const r = ROUTES[name];
@@ -48,8 +50,9 @@ window.BT = (function () {
   }
   const go = name => { location.href = url(name); };
 
-  /* 화면 사이에 고른 날짜·시간·인원·테이블만 넘겨서 표시 */
-  const DEFAULT_DRAFT = { date: '2026-10-10', time: '19:00', party: 4, table: 'T03', request: '아이 의자' };
+  /* 화면 사이에 고른 날짜·시간·인원·테이블과, 예약자 정보 화면(confirm)에서 입력한 이름·연락처를 넘긴다.
+   * confirmed: 예약자 정보 화면에서 '예약 확정하기'를 눌렀는지 */
+  const DEFAULT_DRAFT = { date: D.DEMO_DATE, time: '19:00', party: 4, table: 'T03', request: '', name: '', phone: '', email: '', confirmed: false };
   const draft = () => Object.assign({}, DEFAULT_DRAFT, sget('bt.draft', {}));
   const saveDraft = p => { const d = Object.assign(draft(), p); sset('bt.draft', d); return d; };
 
@@ -58,20 +61,27 @@ window.BT = (function () {
    * 취소·노쇼·방문·테이블 이동·워크인처럼 바뀐 부분만 sessionStorage('bt.res')에 쌓는다.
    * 실제 구현: GET/PATCH /api/owner/reservations, POST /api/reservations/lookup */
   const NOW = D.OWNER_NOW;
-  const guestNo = d => 'BT-' + d.date.replace(/-/g, '') + '-0031';
+  /* 손님 예약번호: 확정할 때 newGuestNo()로 만든 번호를 draft.no 에 넣어 둔다 */
+  const guestNo = d => d.no || ('BT-' + d.date.replace(/-/g, '') + '-0101');
   const resLog = () => sget('bt.res', { patch: {}, added: [] });
+  /* 매장 전체 예약 = 하드코딩 예약 + 점주·손님이 새로 만든 예약(log.added). 손님 화면 · 점주 화면이 모두 이 목록 하나만 본다.
+   * (예전에는 손님 화면에만 보이는 시연용 예약이 따로 있어서 대시보드와 어긋났다) */
   function reservations() {
-    const log = resLog(), d = draft();
+    const log = resLog();
     const base = D.OWNER_RESERVATIONS.map(r => Object.assign({ date: D.OWNER_TODAY }, r));
-    const mine = { no: guestNo(d), date: d.date, time: d.time, name: '홍길동', phone: '010-0000-0000', email: 'hello@example.com', party: d.party, table: d.table, status: 'booked', request: d.request || '' };
-    if (!base.some(r => r.no === mine.no)) base.push(mine);
     return base.concat(log.added).map(r => Object.assign({}, r, log.patch[r.no]));
+  }
+  /* 같은 날짜에 아직 안 쓴 손님 예약번호 (0101부터) */
+  function newGuestNo(date) {
+    const used = new Set(reservations().map(r => r.no)), ymd = date.replace(/-/g, '');
+    for (let i = 101; i < 10000; i++) { const no = `BT-${ymd}-${String(i).padStart(4, '0')}`; if (!used.has(no)) return no; }
+    return `BT-${ymd}-${Date.now() % 10000}`;
   }
   function updateReservation(no, change) { const log = resLog(); log.patch[no] = Object.assign(log.patch[no] || {}, change); sset('bt.res', log); }
   function addReservation(r) { const log = resLog(); log.added.push(r); sset('bt.res', log); }
   /* 점주가 직접 만든 배정(워크인 · 전화 예약)만 지울 수 있다 */
   function removeReservation(no) { const log = resLog(); log.added = log.added.filter(r => r.no !== no); delete log.patch[no]; sset('bt.res', log); }
-  function resetReservations() { try { sessionStorage.removeItem('bt.res'); } catch (e) {} }
+  function resetReservations() { sremove('bt.res'); }
   const isActive = r => r.status !== 'noshow' && r.status !== 'cancelled';
 
   /* ---------- 예약 조회 링크 (C-07) ----------
@@ -97,15 +107,43 @@ window.BT = (function () {
    * 좌석 수와 구역 인원 조건 위반이면 이유 문자열, 괜찮으면 null */
   function seatRule(t, party, fl) {
     if (t.seats < party) return `${t.seats}인 테이블이라 ${party}명은 앉을 수 없어요`;
+    /* 2명 이하는 6인 이상 · 단체 · 룸 테이블에 앉지 않는다 (큰 자리는 단체 손님용으로 남김) */
+    if (party <= 2 && (t.seats >= 6 || (t.tags || []).includes('단체') || t.shape === 'room')) return '단체석은 3명 이상부터 이용할 수 있어요';
     const z = zoneOf(t, fl);
     if (z && z.minParty && party < z.minParty) return `${z.name}은 ${z.minParty}명 이상만 받아요`;
     if (z && z.maxParty && party > z.maxParty) return `${z.name}은 ${z.maxParty}명까지만 받아요`;
     return null;
   }
-  /* 같은 날 같은 테이블에서 이용 시간이 겹치는 유효 예약 (except: 자기 자신 예약번호) */
+  /* 같은 날 같은 테이블에서 이용 시간이 겹치는 유효 예약 (except: 자기 자신 예약번호)
+   * 두 예약 모두 이용 시간(dineMinutes)만큼 자리를 쓰므로, 시작 시각 차이가 이용 시간보다 작으면 겹친다 */
   function tableClash(tableId, date, time, list, except) {
     const dine = store().dineMinutes;
     return list.find(r => r.no !== except && isActive(r) && r.table === tableId && r.date === date && Math.abs(toMin(r.time) - toMin(time)) < dine) || null;
+  }
+  /* 같은 날짜 · 같은 시각의 유효 예약 수가 시간대별 한도(slotLimit)에 찼는지 */
+  function slotFull(date, time, list, except) {
+    return list.filter(r => r.no !== except && isActive(r) && r.date === date && r.time === time).length >= store().slotLimit;
+  }
+  /* 손님 좌석도 · 예약 확정 · 점주 배정이 함께 쓰는 판정.
+   * 문제가 있으면 { kind, reason }, 앉을 수 있으면 null
+   *   kind: time(지난 시간 · 영업시간 밖 · 브레이크) | rule(좌석 수 · 단체석 · 구역 인원) | reserved(이용 시간 겹침) | full(시간대 한도) */
+  function checkSeat(t, c, list, fl, except) {
+    if (!t) return { kind: 'rule', reason: '테이블을 찾을 수 없어요' };
+    if (c.date < TODAY || (c.date === TODAY && toMin(c.time) <= toMin(NOW))) return { kind: 'time', reason: '이미 지난 시간이에요' };
+    const tc = timeCheck(c.time);
+    if (!tc.ok) return { kind: 'time', reason: tc.reason };
+    const rule = seatRule(t, c.party, fl);
+    if (rule) return { kind: 'rule', reason: rule };
+    const hit = tableClash(t.id, c.date, c.time, list, except);
+    if (hit) {
+      const dine = store().dineMinutes;
+      const reason = toMin(hit.time) <= toMin(c.time)
+        ? `${hit.time} 예약이 ${toHHMM(toMin(hit.time) + dine)}까지 이 자리를 써요`
+        : `${hit.time}에 다음 예약이 있어 ${dine}분 동안 앉을 수 없어요`;
+      return { kind: 'reserved', reason, hit };
+    }
+    if (slotFull(c.date, c.time, list, except)) return { kind: 'full', reason: `${c.time}은 예약 한도(${store().slotLimit}팀)가 찼어요` };
+    return null;
   }
 
   /* ---------- 날짜 / 시간 ---------- */
@@ -120,7 +158,7 @@ window.BT = (function () {
     if (opt === 'short') return `${dt.getMonth() + 1}월 ${dt.getDate()}일 (${w})`;
     return `${dt.getFullYear()}.${pad(dt.getMonth() + 1)}.${pad(dt.getDate())} (${w})`;
   }
-  /* 2026년 10월 1일 ~ 31일, 오늘(10/5) 이전은 선택 불가 */
+  /* 이번 달 1일 ~ 말일, 오늘 이전은 선택 불가 (함수 이름은 예전 그대로) */
   function octoberDays() {
     const out = [], last = new Date(YEAR, MONTH, 0).getDate();
     for (let d = 1; d <= last; d++) {
@@ -195,7 +233,7 @@ window.BT = (function () {
     if (/[?&]debug\b/.test(location.search)) showDebug();
     /* 발표용 화면 구성도 패널 (static/js/screen-map.js) */
     const sm = document.createElement('script');
-    sm.src = document.body.dataset.server === 'true' ? '/js/screen-map.js?v=20261025a' : '../'.repeat(Number(document.body.dataset.depth || 0) + 1) + 'static/js/screen-map.js?v=20261025a';
+    sm.src = document.body.dataset.server === 'true' ? '/js/screen-map.js?v=20261110a' : '../'.repeat(Number(document.body.dataset.depth || 0) + 1) + 'static/js/screen-map.js?v=20261110a';
     document.body.appendChild(sm);
     /* 매장 입장 화면의 영업시간 표시도 운영 조건을 따른다 */
     const ho = document.getElementById('h-open'), hb = document.getElementById('h-break'), h = store().hours;
@@ -209,5 +247,5 @@ window.BT = (function () {
   });
 
   return { YEAR, MONTH, TODAY, NOW, store, saveStore, resetStore, floors, allTables, findTable, zoneOf, url, go, draft, saveDraft,
-    guestNo, reservations, updateReservation, addReservation, removeReservation, resetReservations, isActive, tokenOf, byToken, tokenExpired, lookupUrl, seatRule, tableClash, sget, sset, pad, toMin, toHHMM, parseDate, iso, fmtDate, octoberDays, slots, timeCheck, esc, toast };
+    guestNo, newGuestNo, reservations, updateReservation, addReservation, removeReservation, resetReservations, isActive, tokenOf, byToken, tokenExpired, lookupUrl, seatRule, tableClash, slotFull, checkSeat, sget, sset, sremove, pad, toMin, toHHMM, parseDate, iso, fmtDate, octoberDays, slots, timeCheck, esc, toast };
 })();

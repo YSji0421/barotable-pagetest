@@ -1,0 +1,102 @@
+.owner-timeline-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}.owner-schedule-open{white-space:nowrap;}
+/* Dedicated large reservation schedule page */
+.owner-timeline-actions { display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap; }
+.owner-schedule-open { white-space:nowrap; }
+.owner-tt-date { min-height:38px; padding:8px 10px; border:1px solid #e4e6e8; border-radius:9px; background:#fff; color:#384450; font:inherit; font-size:12px; font-weight:700; }
+body[data-screen="owner-schedule"] { background:#f7f8f9; }
+body[data-screen="owner-schedule"] .owner-main { min-width:0; padding:24px clamp(16px,2.3vw,38px) 34px; }
+body[data-screen="owner-schedule"] .page-title { align-items:center; margin-bottom:16px; }
+body[data-screen="owner-schedule"] .page-title h1 { font-size:clamp(25px,2vw,34px); letter-spacing:-.04em; }
+body[data-screen="owner-schedule"] .page-title p { margin-top:6px; color:#7b8b80; font-size:13px; }
+body[data-screen="owner-schedule"] #stats,
+body[data-screen="owner-schedule"] #owner-seats,
+body[data-screen="owner-schedule"] .owner-bottom-grid { display:none !important; }
+body[data-screen="owner-schedule"] .owner-overview-grid { display:block; margin:0; }
+body[data-screen="owner-schedule"] #owner-timetable { margin-top:0 !important; padding:22px !important; border-color:#e6e8ea; box-shadow:0 2px 12px rgba(31, 38, 45,.035); }
+body[data-screen="owner-schedule"] #owner-timetable .card-head { align-items:center; margin-bottom:18px !important; }
+body[data-screen="owner-schedule"] #owner-timetable .card-head h2 { font-size:20px !important; }
+body[data-screen="owner-schedule"] #owner-timetable .card-sub { font-size:12px; }
+body[data-screen="owner-schedule"] .owner-tt-toolbar { margin-bottom:16px; gap:12px; }
+body[data-screen="owner-schedule"] .owner-tt-period button { padding:9px 14px; font-size:12px; }
+body[data-screen="owner-schedule"] .owner-tt-control { gap:10px; flex-wrap:wrap; }
+body[data-screen="owner-schedule"] .owner-tt-select { min-height:38px; }
+body[data-screen="owner-schedule"] .owner-tt-date { min-height:38px; }
+body[data-screen="owner-schedule"] #timetable { max-height:none; height:calc(100dvh - 310px); min-height:420px; overflow:auto; border-radius:12px; }
+body[data-screen="owner-schedule"] #timetable .tt { --tt-label:112px; min-width:1100px; font-size:13px; }
+body[data-screen="owner-schedule"] #timetable .tt-head { height:40px; }
+body[data-screen="owner-schedule"] #timetable .tt-name-h { padding:0 12px; font-size:12px; }
+body[data-screen="owner-schedule"] #timetable .tt-tick { padding-left:7px; font-size:12px; }
+body[data-screen="owner-schedule"] #timetable .tt-row { min-height:46px !important; }
+body[data-screen="owner-schedule"] #timetable .tt-name { padding:5px 12px !important; }
+body[data-screen="owner-schedule"] #timetable .tt-name b { font-size:13px; }
+body[data-screen="owner-schedule"] #timetable .tt-name span { font-size:11px; }
+body[data-screen="owner-schedule"] #timetable .tt-block { top:6px; bottom:6px; padding:0 8px; border-radius:7px; font-size:12px; }
+body[data-screen="owner-schedule"] #timetable .tt-now span { top:5px; }
+body[data-screen="owner-schedule"] .owner-tt-pages { display:none !important; }
+body[data-screen="owner-schedule"] .tt-legend { gap:16px; margin-top:16px; font-size:12px; }
+body[data-screen="owner-schedule"] .tt-legend i { transform:scale(.95); }
+body[data-screen="owner-schedule"] .owner-shell { min-height:100dvh; }
+@media (max-width:1100px) {
+  body[data-screen="owner-schedule"] .owner-main { padding:20px 16px 28px; }
+  body[data-screen="owner-schedule"] #owner-timetable { padding:16px !important; }
+  body[data-screen="owner-schedule"] #timetable { height:calc(100dvh - 300px); min-height:350px; }
+}
+@media (max-width:860px) {
+  body[data-screen="owner-schedule"] .page-title { align-items:flex-start; }
+  body[data-screen="owner-schedule"] .page-title > .row { width:100%; }
+  body[data-screen="owner-schedule"] .owner-tt-toolbar { align-items:stretch; }
+  body[data-screen="owner-schedule"] .owner-tt-period { width:100%; }
+  body[data-screen="owner-schedule"] .owner-tt-control { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); width:100%; }
+  body[data-screen="owner-schedule"] .owner-tt-date, body[data-screen="owner-schedule"] .owner-tt-select { width:100%; min-width:0; }
+  body[data-screen="owner-schedule"] #timetable { height:calc(100dvh - 330px); min-height:320px; }
+  body[data-screen="owner-schedule"] #timetable .tt { min-width:900px; }
+}
+@media (max-width:480px) {
+  body[data-screen="owner-schedule"] .owner-main { padding:14px 10px 24px; }
+  body[data-screen="owner-schedule"] #owner-timetable { padding:12px !important; }
+  body[data-screen="owner-schedule"] #owner-timetable .card-head { align-items:flex-start; }
+  body[data-screen="owner-schedule"] #owner-timetable .card-head h2 { font-size:18px !important; }
+  body[data-screen="owner-schedule"] .owner-tt-control { grid-template-columns:1fr; }
+  body[data-screen="owner-schedule"] #timetable { height:calc(100dvh - 390px); min-height:260px; }
+  body[data-screen="owner-schedule"] #timetable .tt { min-width:840px; }
+  body[data-screen="owner-schedule"] .tt-legend { gap:8px 12px; font-size:11px; }
+}
+/* PC polish for the store management screens */
+@media (min-width: 1024px) {
+  body[data-screen^="owner-"] .owner-main { padding: 28px clamp(22px, 2vw, 36px) 50px; }
+  body[data-screen^="owner-"] .owner-main .page-title { margin-bottom: 22px; }
+  body[data-screen^="owner-"] .owner-main .page-title h1 { font-size: clamp(28px, 2vw, 32px); letter-spacing: -0.025em; }
+  body[data-screen^="owner-"] .owner-main .card { border-color: var(--line) !important; box-shadow: 0 3px 14px rgba(38, 55, 74, .055) !important; }
+  body[data-screen^="owner-"] .owner-main .btn { transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease; }
+  body[data-screen^="owner-"] .owner-main .btn:focus-visible,
+  body[data-screen^="owner-"] .owner-main input:focus-visible,
+  body[data-screen^="owner-"] .owner-main select:focus-visible { outline: 3px solid var(--indigo-soft); outline-offset: 2px; }
+}
+@media (min-width: 1280px) {
+  body[data-screen^="owner-"] .owner-main { width: 100%; max-width: 1600px; margin-inline: auto; }
+  body[data-screen^="owner-"] .owner-shell { grid-template-columns: 228px minmax(0, 1fr); }
+  body[data-screen="owner-dashboard"] .owner-overview-grid,
+  body[data-screen="owner-dashboard"] .owner-bottom-grid {
+    display: grid !important; grid-template-columns: minmax(0, 1.1fr) minmax(400px, .9fr) !important;
+    gap: 20px !important; margin-top: 20px !important;
+  }
+  body[data-screen="owner-dashboard"] .owner-overview-grid > .card,
+  body[data-screen="owner-dashboard"] .owner-bottom-grid > .card,
+  body[data-screen="owner-dashboard"] .owner-mini-actions > .card { padding: 20px !important; }
+  body[data-screen="owner-dashboard"] .owner-mini-actions { gap: 20px !important; }
+  body[data-screen="owner-dashboard"] .tt-dashboard-scroll { max-height: 360px; }
+  body[data-screen="owner-dashboard"] .tt-dashboard-scroll .tt { min-width: 520px; font-size: 11px; }
+  body[data-screen="owner-dashboard"] .tt-dashboard-scroll .tt-row { min-height: 34px; }
+  body[data-screen="owner-dashboard"] #owner-reservations .list-scroll { max-height: 440px; }
+  body[data-screen="owner-dashboard"] #owner-reservations thead th { position: sticky; top: 0; z-index: 1; background: var(--surface-2); }
+  body[data-screen="owner-dashboard"] #owner-reservations tbody tr:hover { background: var(--surface-2); }
+  body[data-screen="owner-dashboard"] #detail { position: sticky; top: 18px; }
+  body[data-screen="owner-schedule"] #owner-timetable { padding: 26px !important; }
+  body[data-screen="owner-schedule"] .tt-dashboard-scroll { max-height: 520px; }
+  body[data-screen="owner-schedule"] .tt-dashboard-scroll .tt { min-width: 760px; font-size: 12px; }
+  body[data-screen="owner-schedule"] .tt-dashboard-scroll .tt-row { min-height: 38px; }
+  body[data-screen="owner-editor"] .editor { grid-template-columns: 210px minmax(0, 1fr) 300px !important; gap: 20px; }
+  body[data-screen="owner-editor"] .editor .props { grid-column: auto !important; }
+  body[data-screen="admin"] .admin-main { max-width: 1680px !important; margin-inline: auto; padding: 28px clamp(24px, 2vw, 40px) 48px !important; }
+}
+@media (prefers-reduced-motion: reduce) { body[data-screen^="owner-"] .owner-main .btn { transition: none; } }

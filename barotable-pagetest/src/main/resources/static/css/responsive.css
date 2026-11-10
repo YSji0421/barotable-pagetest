@@ -1,0 +1,66 @@
+/* Responsive polish: prevent narrow-screen overflow without changing data or APIs. */
+html,body{max-width:100%;overflow-x:clip}
+body{min-width:0}
+img,svg,video,canvas{max-width:100%}
+main,section,article,aside,header,footer,.wrap,.page,.grid,.card,.stack{min-width:0}
+button,input,select,textarea{max-width:100%}
+.table-wrap,.table-scroll,.owner-table-wrap,.admin-table-wrap,.adm-table-scroll,.list-scroll{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.sheet-horizontal,.sheet-time-scroll,.booking-map-scroll,.sf-area,.tt-scroll,.list-scroll,.adm-table-scroll,[data-drag-scroll]{overscroll-behavior:contain;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.sheet-horizontal,.sheet-time-scroll,.booking-map-scroll,.sf-area,.tt-scroll,.list-scroll,.adm-table-scroll,[data-drag-scroll]{cursor:grab;touch-action:pan-x pan-y}
+.is-dragging{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
+.is-dragging *{user-select:none!important;-webkit-user-select:none!important}
+.sheet-calendar-label{gap:10px;flex-wrap:wrap}
+.calendar-month-controls{display:flex;align-items:center;gap:7px;flex:none}
+.calendar-month-controls b{min-width:96px;text-align:center;font-size:13px;color:#39464b;white-space:nowrap}
+.calendar-month-controls button{display:inline-grid;place-items:center;width:30px;height:30px;border:1px solid #e4e5e7;border-radius:8px;background:#fff;color:#494d50;font-size:17px;line-height:1;cursor:pointer}
+.calendar-month-controls button:hover:not(:disabled){background:#f5f6f8;border-color:#bcc0c5}
+.calendar-month-controls button:disabled{opacity:.35;cursor:not-allowed}
+body[data-screen="reserve"] .map-table.st-small{background:#f0f1f0!important;border-color:#d3d8d5!important;opacity:1!important;filter:grayscale(1);box-shadow:none!important;color:#7b8580!important}
+body[data-screen="reserve"] .map-table.st-small strong,body[data-screen="reserve"] .map-table.st-small span,body[data-screen="reserve"] .map-table.st-small small{color:#7b8580!important}
+.public-header-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.public-header-actions .head-link{white-space:nowrap;font-size:12px}
+.member-login-page{max-width:520px;margin-inline:auto;padding-top:38px}
+.member-login-card{gap:18px}
+.member-login-links{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;padding-top:6px;border-top:1px solid #eeeeef}
+.member-login-links a{font-size:13px;font-weight:650;text-decoration:none;color:#565a5f}
+.member-login-links a:hover{color:#26374A}
+#member-login-message{margin:0}
+@media(max-width:760px){
+  .wrap{padding-inline:12px!important}
+  .page{padding-top:18px!important;padding-bottom:44px!important}
+  .card{padding:16px!important}
+  .grid.cols-2,.grid.cols-3,.grid.cols-main-side,.booking-seat-grid{grid-template-columns:minmax(0,1fr)!important}
+  .booking-map-card{padding:14px!important}
+  .booking-map-scroll,.map-scroll{max-width:100%;overflow:auto;-webkit-overflow-scrolling:touch}
+  .sheet-top{padding:14px 16px 12px!important}
+  .sheet-body{padding:12px 16px 10px!important;max-height:calc(92dvh - 170px);overflow-y:auto;overscroll-behavior:contain}
+  .sheet-footer{padding:10px 16px calc(12px + env(safe-area-inset-bottom,0px))!important;gap:10px}
+  .sheet-calendar{padding:8px!important}
+  .calendar-grid{min-width:0;gap:2px}
+  .calendar-day{min-width:0;height:35px!important;font-size:12px!important}
+  .calendar-day small{font-size:8px}
+  .sheet-horizontal{max-width:100%;overflow-x:auto;white-space:nowrap;touch-action:pan-x}
+  .sheet-time-scroll{display:flex;max-width:100%;overflow-x:auto}
+  .sheet-time-choice,.sheet-choice{flex:0 0 auto}
+  .site-head .wrap{flex-wrap:wrap;gap:8px!important;padding-block:8px}
+  .site-head .head-store{display:none}
+  .site-head .unified-steps{width:100%;flex:1 1 100%;justify-content:center;margin:0;overflow-x:auto;padding-bottom:2px}
+  .public-header-actions{width:100%;justify-content:space-between;gap:6px}
+  .public-header-actions .btn{flex:1 1 auto;padding-inline:9px;min-width:0}
+  .public-header-actions .head-link{font-size:11px}
+  .member-login-page{padding-top:18px!important}
+  .booking-bottom-sheet{width:100%;max-width:100%;max-height:92dvh}
+  .venue-photo-grid{max-width:100%}
+  .venue-columns{min-width:0}
+  .venue-sticky-cta{max-width:100%}
+}
+@media(max-width:390px){
+  .calendar-month-controls{gap:4px}
+  .calendar-month-controls b{min-width:82px;font-size:12px}
+  .calendar-month-controls button{width:28px;height:28px}
+  .sheet-calendar-label>div:first-child{gap:7px}
+  .sheet-footer-note{min-width:0}
+  .sheet-footer-note b,.sheet-footer-note span{overflow-wrap:anywhere}
+  .public-header-actions .head-link{font-size:10px}
+  .public-header-actions .btn{font-size:11px;padding-inline:7px}
+}

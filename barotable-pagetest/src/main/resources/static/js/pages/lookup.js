@@ -12,10 +12,54 @@
   const STATUS = { booked: ['예약 확정', 'badge-teal'], visited: ['방문 완료', 'badge-blue'], noshow: ['노쇼 처리됨', 'badge-coral'], cancelled: ['취소됨', 'badge-gray'] };
   let current = null, asking = false, miss = '';
 
+  /* 시연용 기본값: 오늘 날짜로 만든 강태민 님 예약번호 */
+  const lkNo = $('#lk-no');
+  if (lkNo && lkNo.value === 'BT-20261005-0025') lkNo.value = `BT-${BT.TODAY.replace(/-/g, '')}-0025`;
   const byNo = no => BT.reservations().find(r => r.no === no) || null;
   function find(no, phone) {
     return BT.reservations().find(r => r.no.toUpperCase() === no.trim().toUpperCase() && r.phone && digits(r.phone) === digits(phone)) || null;
   }
+  /* 전화번호 자동 하이픈: 화면 입력만 포맷하고 조회 시에는 기존 digits() 비교를 유지 */
+  const phoneInput = $('#lk-phone');
+  function formatKoreanPhone(value) {
+    const raw = String(value || '').trim();
+    let d = raw.replace(/\D/g, '');
+    if (/^\+82/.test(raw.replace(/[\s()-]/g, '')) && d.startsWith('82')) d = '0' + d.slice(2);
+    if (d.startsWith('02')) {
+      d = d.slice(0, 10);
+      if (d.length <= 2) return d;
+      if (d.length <= 5) return d.slice(0, 2) + '-' + d.slice(2);
+      if (d.length <= 9) return d.slice(0, 2) + '-' + d.slice(2, 5) + '-' + d.slice(5);
+      return d.slice(0, 2) + '-' + d.slice(2, 6) + '-' + d.slice(6, 10);
+    }
+    d = d.slice(0, 11);
+    if (d.length <= 3) return d;
+    if (d.length <= 7) return d.slice(0, 3) + '-' + d.slice(3);
+    if (d.length <= 10) return d.slice(0, 3) + '-' + d.slice(3, 6) + '-' + d.slice(6);
+    return d.slice(0, 3) + '-' + d.slice(3, 7) + '-' + d.slice(7, 11);
+  }
+  function formatPhoneInput() {
+    if (!phoneInput) return;
+    const before = phoneInput.value;
+    const caret = phoneInput.selectionStart == null ? before.length : phoneInput.selectionStart;
+    const digitsBeforeCaret = digits(before.slice(0, caret)).length;
+    const after = formatKoreanPhone(before);
+    if (after === before) return;
+    phoneInput.value = after;
+    let pos = 0, seen = 0;
+    while (pos < after.length && seen < digitsBeforeCaret) {
+      if (/\d/.test(after.charAt(pos))) seen++;
+      pos++;
+    }
+    if (after.charAt(pos) === '-') pos++;
+    try { phoneInput.setSelectionRange(pos, pos); } catch (_) {}
+  }
+  if (phoneInput) {
+    phoneInput.addEventListener('input', formatPhoneInput);
+    phoneInput.addEventListener('blur', formatPhoneInput);
+    formatPhoneInput();
+  }
+
   /* 취소할 수 없으면 이유, 할 수 있으면 null */
   function cancelBlock(r) {
     if (r.status === 'cancelled') return null;
@@ -90,6 +134,5 @@
     card.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  /* 시연용: 강태민 님에게 보낸 메일 속 링크 */
-  $('#demo-link').setAttribute('href', BT.lookupUrl('BT-20261005-0025'));
+
 })();

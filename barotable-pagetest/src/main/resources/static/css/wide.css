@@ -1,0 +1,149 @@
+/* =========================================================
+   Natural furniture floor plan
+   Visual-only layer: table geometry, seat count, shape and tags still use the existing data model.
+   ========================================================= */
+body[data-screen="reserve"] #map .map-canvas,
+body[data-screen="reserve"] #sf-map .map-canvas,
+body[data-screen="owner-editor"] #canvas .map-canvas,
+body[data-screen="owner-dashboard"] #owner-seats .map-canvas,
+body[data-screen="owner-guests"] .map-canvas {
+  background: #fbfaf7 !important;
+  background-image: none !important;
+  border: 1px solid #e8e4dc !important;
+  border-radius: 18px !important;
+}
+body[data-screen="reserve"] #map .map-zone,
+body[data-screen="reserve"] #sf-map .map-zone,
+body[data-screen="owner-editor"] #canvas .map-zone,
+body[data-screen="owner-dashboard"] #owner-seats .map-zone,
+body[data-screen="owner-guests"] .map-zone {
+  border-style: solid !important;
+  border-width: 1px !important;
+  border-radius: 16px !important;
+}
+body[data-screen="reserve"] #map .zone-teal, body[data-screen="reserve"] #sf-map .zone-teal,
+body[data-screen="owner-editor"] #canvas .zone-teal, body[data-screen="owner-dashboard"] #owner-seats .zone-teal,
+body[data-screen="owner-guests"] .zone-teal { background: #f1f3f5 !important; border-color: #dfe3e7 !important; }
+body[data-screen="reserve"] #map .zone-slate, body[data-screen="reserve"] #sf-map .zone-slate,
+body[data-screen="owner-editor"] #canvas .zone-slate, body[data-screen="owner-dashboard"] #owner-seats .zone-slate,
+body[data-screen="owner-guests"] .zone-slate { background: #f6f4ef !important; border-color: #e8e3d9 !important; }
+body[data-screen="reserve"] #map .zone-amber, body[data-screen="reserve"] #sf-map .zone-amber,
+body[data-screen="owner-editor"] #canvas .zone-amber, body[data-screen="owner-dashboard"] #owner-seats .zone-amber,
+body[data-screen="owner-guests"] .zone-amber { background: #faf5e9 !important; border-color: #eee2ca !important; }
+body[data-screen="reserve"] #map .zone-indigo, body[data-screen="reserve"] #sf-map .zone-indigo,
+body[data-screen="owner-editor"] #canvas .zone-indigo, body[data-screen="owner-dashboard"] #owner-seats .zone-indigo,
+body[data-screen="owner-guests"] .zone-indigo { background: #f4f3f8 !important; border-color: #e5e2ed !important; }
+body[data-screen="reserve"] #map .zone-coral, body[data-screen="reserve"] #sf-map .zone-coral,
+body[data-screen="owner-editor"] #canvas .zone-coral, body[data-screen="owner-dashboard"] #owner-seats .zone-coral,
+body[data-screen="owner-guests"] .zone-coral { background: #fbf1ed !important; border-color: #efdfd8 !important; }
+body[data-screen="reserve"] #map .zone-label, body[data-screen="reserve"] #sf-map .zone-label,
+body[data-screen="owner-editor"] #canvas .zone-label, body[data-screen="owner-dashboard"] #owner-seats .zone-label,
+body[data-screen="owner-guests"] .zone-label {
+  color: #7b8177 !important; background: #fffefa !important; border: 1px solid #e9e5dc !important;
+  box-shadow: 0 1px 3px #332b1908 !important; font-size: 10px !important; font-weight: 650 !important;
+  padding: 2px 8px !important; border-radius: 99px !important;
+}
+body[data-screen="reserve"] #map .map-fixture, body[data-screen="reserve"] #sf-map .map-fixture,
+body[data-screen="owner-editor"] #canvas .map-fixture, body[data-screen="owner-dashboard"] #owner-seats .map-fixture,
+body[data-screen="owner-guests"] .map-fixture {
+  background: #e9ebed !important; border: 1px solid #dddfe1 !important; color: #7b8277 !important; border-radius: 8px !important;
+}
+body[data-screen="reserve"] #map .fx-window, body[data-screen="reserve"] #sf-map .fx-window,
+body[data-screen="owner-editor"] #canvas .fx-window, body[data-screen="owner-dashboard"] #owner-seats .fx-window,
+body[data-screen="owner-guests"] .fx-window { background: #dee4ea !important; border-color: #ccd4dd !important; }
+body[data-screen="reserve"] #map .fx-wall, body[data-screen="reserve"] #sf-map .fx-wall,
+body[data-screen="owner-editor"] #canvas .fx-wall, body[data-screen="owner-dashboard"] #owner-seats .fx-wall,
+body[data-screen="owner-guests"] .fx-wall { background: #c8cacc !important; border-color: #c8cacc !important; }
+body[data-screen="reserve"] #map .fx-entrance, body[data-screen="reserve"] #sf-map .fx-entrance,
+body[data-screen="owner-editor"] #canvas .fx-entrance, body[data-screen="owner-dashboard"] #owner-seats .fx-entrance,
+body[data-screen="owner-guests"] .fx-entrance { background: transparent !important; border: 0 !important; border-top: 3px solid #94a2af !important; color: #6a7886 !important; }
+body[data-screen="reserve"] #map .map-table, body[data-screen="reserve"] #sf-map .map-table,
+body[data-screen="owner-editor"] #canvas .map-table, body[data-screen="owner-dashboard"] #owner-seats .map-table,
+body[data-screen="owner-guests"] .map-table {
+  --chair-fill: #d5d8db; --chair-edge: #bbbec2;
+  color: #4d4b42 !important;
+  background: linear-gradient(145deg, #fbf5e9 0%, #f2e5d3 58%, #ecddc9 100%) !important;
+  border: 1px solid #cbb79c !important;
+  border-radius: 13px;
+  box-shadow: inset 0 1px 0 #fff9, 0 2px 5px #3b2b1712 !important;
+  overflow: visible !important;
+  isolation: isolate;
+}
+body[data-screen="reserve"] #map .map-table.shape-round, body[data-screen="reserve"] #sf-map .map-table.shape-round,
+body[data-screen="owner-editor"] #canvas .map-table.shape-round, body[data-screen="owner-dashboard"] #owner-seats .map-table.shape-round,
+body[data-screen="owner-guests"] .map-table.shape-round { border-radius: 50% !important; }
+body[data-screen="reserve"] #map .map-table.shape-bar, body[data-screen="reserve"] #sf-map .map-table.shape-bar,
+body[data-screen="owner-editor"] #canvas .map-table.shape-bar, body[data-screen="owner-dashboard"] #owner-seats .map-table.shape-bar,
+body[data-screen="owner-guests"] .map-table.shape-bar { border-radius: 8px !important; }
+body[data-screen="reserve"] #map .map-table.shape-room, body[data-screen="reserve"] #sf-map .map-table.shape-room,
+body[data-screen="owner-editor"] #canvas .map-table.shape-room, body[data-screen="owner-dashboard"] #owner-seats .map-table.shape-room,
+body[data-screen="owner-guests"] .map-table.shape-room {
+  border: 2px solid #d5d4c8 !important; border-radius: 17px !important;
+  background: linear-gradient(145deg, #fbfaf5, #f2f0e6) !important;
+  box-shadow: inset 0 0 0 5px #f7f5ec, inset 0 0 0 6px #e7e4d8, 0 2px 5px #3b2b1710 !important;
+}
+.map-table .table-chair {
+  position: absolute; display: block; width: clamp(5px, 1.1cqw, 11px); height: clamp(5px, .78cqw, 8px);
+  padding: 0; margin: 0; border-radius: 3px; background: var(--chair-fill, #d5d8db); border: 1px solid var(--chair-edge, #bbbec2);
+  box-shadow: 0 1px 2px #282c2f16; pointer-events: none; z-index: 1;
+}
+.map-table > strong, .map-table > span:not(.ed-handle), .map-table > small { position: relative; z-index: 3; }
+body[data-screen="reserve"] #map .map-table strong, body[data-screen="reserve"] #sf-map .map-table strong,
+body[data-screen="owner-editor"] #canvas .map-table strong, body[data-screen="owner-dashboard"] #owner-seats .map-table strong,
+body[data-screen="owner-guests"] .map-table strong { font-family: var(--font, "Noto Sans KR", sans-serif) !important; font-size: 12px !important; font-weight: 750 !important; letter-spacing: -.02em; }
+body[data-screen="reserve"] #map .map-table span, body[data-screen="reserve"] #sf-map .map-table span,
+body[data-screen="owner-editor"] #canvas .map-table span:not(.ed-handle), body[data-screen="owner-dashboard"] #owner-seats .map-table span,
+body[data-screen="owner-guests"] .map-table span { color: #756d60 !important; font-size: 9px !important; font-weight: 600; }
+body[data-screen="reserve"] #map .map-table small, body[data-screen="reserve"] #sf-map .map-table small { color: #7b8177 !important; font-size: 9px !important; }
+body[data-screen="reserve"] #map .map-table::before, body[data-screen="reserve"] #map .map-table::after,
+body[data-screen="reserve"] #sf-map .map-table::before, body[data-screen="reserve"] #sf-map .map-table::after { content: none !important; }
+body[data-screen="reserve"] #map .map-table.is-recommended::before, body[data-screen="reserve"] #sf-map .map-table.is-recommended::before {
+  content: "추천" !important; position: absolute; top: -11px; right: -5px; z-index: 4; width: auto; height: auto; left: auto; bottom: auto;
+  background: #f7edcf !important; border: 1px solid #e6d6aa !important; color: #76613a !important;
+  border-radius: 99px !important; padding: 2px 6px !important; font-size: 9px !important; line-height: 1.2; font-weight: 700;
+}
+body[data-screen="reserve"] #map .map-table.st-available, body[data-screen="reserve"] #sf-map .map-table.st-available { --chair-fill:#d5d8dc; --chair-edge:#bbbfc3; border-color:#c9b79e !important; }
+body[data-screen="reserve"] #map .map-table.st-reserved, body[data-screen="reserve"] #sf-map .map-table.st-reserved {
+  --chair-fill:#d5d8d4; --chair-edge:#c4c9c4; color:#818982 !important; background:linear-gradient(145deg,#e8e9ea,#dee0e1) !important; border-color:#cbd0ca !important; opacity:1 !important; box-shadow:none !important;
+}
+body[data-screen="reserve"] #map .map-table.st-small, body[data-screen="reserve"] #map .map-table.st-rule,
+body[data-screen="reserve"] #sf-map .map-table.st-small, body[data-screen="reserve"] #sf-map .map-table.st-rule {
+  --chair-fill:#e1e3df; --chair-edge:#d1d5d0; color:#858d86 !important; background:#eff0f0 !important; border-color:#d7d9db !important; opacity:1 !important; filter:grayscale(1); box-shadow:none !important;
+}
+body[data-screen="reserve"] #map .map-table.st-reserved strong, body[data-screen="reserve"] #map .map-table.st-reserved span,
+body[data-screen="reserve"] #sf-map .map-table.st-reserved strong, body[data-screen="reserve"] #sf-map .map-table.st-reserved span,
+body[data-screen="reserve"] #map .map-table.st-small strong, body[data-screen="reserve"] #map .map-table.st-small span,
+body[data-screen="reserve"] #sf-map .map-table.st-small strong, body[data-screen="reserve"] #sf-map .map-table.st-small span,
+body[data-screen="reserve"] #map .map-table.st-rule strong, body[data-screen="reserve"] #map .map-table.st-rule span,
+body[data-screen="reserve"] #sf-map .map-table.st-rule strong, body[data-screen="reserve"] #sf-map .map-table.st-rule span { color:#7f8981 !important; }
+body[data-screen="reserve"] #map .map-table.is-recommended:not(.is-selected), body[data-screen="reserve"] #sf-map .map-table.is-recommended:not(.is-selected) {
+  --chair-fill:#e8dcc0; --chair-edge:#d8c69f; background:linear-gradient(145deg,#fff9e9,#f7edcf) !important; border-color:#cfb578 !important;
+}
+body[data-screen="reserve"] #map .map-table.is-selected, body[data-screen="reserve"] #sf-map .map-table.is-selected {
+  --chair-fill:#d2d8df; --chair-edge:#acb8c3; color:#405A78 !important;
+  background:linear-gradient(145deg,#e7ebee,#d3dbe3) !important; border:2px solid #526B86 !important;
+  box-shadow:0 0 0 3px #dbe2e8, 0 4px 10px #263e571a !important; z-index:5;
+}
+body[data-screen="reserve"] #map .map-table.is-selected strong, body[data-screen="reserve"] #map .map-table.is-selected span,
+body[data-screen="reserve"] #sf-map .map-table.is-selected strong, body[data-screen="reserve"] #sf-map .map-table.is-selected span { color:#405A78 !important; }
+body[data-screen="reserve"] #map .map-table:hover:not(:disabled), body[data-screen="reserve"] #sf-map .map-table:hover:not(:disabled) { transform:translateY(-1px) rotate(var(--rot,0deg)); box-shadow:0 0 0 3px #dbe2e8,0 5px 12px #2f3f5012 !important; }
+body[data-screen="reserve"] #map .map-table:focus-visible, body[data-screen="reserve"] #sf-map .map-table:focus-visible { outline:2px solid #526B86; outline-offset:4px; }
+body[data-screen="reserve"] .booking-map-scroll { background:#fbfaf7; border:1px solid #e8e4dc; border-radius:18px; padding:12px; }
+body[data-screen="reserve"] .booking-map-card { background:#fff; border:1px solid #e8eaeb; box-shadow:none; }
+body[data-screen="reserve"] .booking-side { background:#fff; border:1px solid #e8eaeb; }
+body[data-screen="owner-editor"] #canvas .map-table.ed-item,
+body[data-screen="owner-editor"] #canvas .map-table.ed-item:hover { cursor:grab; box-shadow:inset 0 1px 0 #fff9,0 2px 5px #3b2b1712 !important; }
+body[data-screen="owner-editor"] #canvas .map-table.ed-sel { outline:2px solid #7c7ab8 !important; outline-offset:3px; }
+body[data-screen="owner-dashboard"] #owner-seats .map-table.st-booked { --chair-fill:#d2d8de; --chair-edge:#b7c0c9; background:#e7ebee !important; border-color:#94a2b1 !important; }
+body[data-screen="owner-dashboard"] #owner-seats .map-table.st-visited { --chair-fill:#d5e1ef; --chair-edge:#b7c9de; background:#eaf1fa !important; border-color:#b5c8e1 !important; }
+body[data-screen="owner-dashboard"] #owner-seats .map-table.st-waiting { --chair-fill:#f0dfb9; --chair-edge:#deca9d; background:#fbf3df !important; border-color:#e5d19f !important; }
+body[data-screen="owner-dashboard"] #owner-seats .map-table.st-noshow { --chair-fill:#efd7d3; --chair-edge:#ddbbb4; background:#faeeeb !important; border-color:#e4c3bc !important; }
+body[data-screen="owner-editor"] .table-custom-note { padding:11px 12px; border:1px solid #e5e8eb; border-radius:12px; background:#f8f9fa; margin:12px 0 2px; }
+body[data-screen="owner-editor"] .table-custom-note strong { display:block; font-size:12px; color:#405A78; margin-bottom:4px; }
+body[data-screen="owner-editor"] .table-custom-note p { margin:0; color:#727b73; font-size:11.5px; line-height:1.6; }
+@media (max-width: 640px) {
+  body[data-screen="reserve"] .booking-map-scroll { padding:8px; }
+  body[data-screen="reserve"] #map .map-table strong, body[data-screen="reserve"] #sf-map .map-table strong { font-size:clamp(9px,2.5cqw,12px) !important; }
+  body[data-screen="reserve"] #map .map-table span, body[data-screen="reserve"] #sf-map .map-table span { font-size:8px !important; }
+  body[data-screen="owner-editor"] .table-custom-note { padding:9px 10px; }
+}

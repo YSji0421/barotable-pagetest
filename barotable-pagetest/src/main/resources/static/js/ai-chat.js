@@ -17,14 +17,14 @@
   const slot = { date: null, time: null, party: null, requests: [], prefs: [] };
   let misses = 0, greeted = false;
 
-  const SUGGEST = ['이번 토요일 저녁 7시쯤 4명이고 아이 의자가 필요해요', '내일 점심 12시 반 둘이요, 창가 자리', '10월 17일 6명 2층 룸', '오늘 3시에 2명', '금요일 퇴근하고 커플로 갈게요'];
+  const SUGGEST = ['이번 토요일 저녁 7시쯤 4명이고 아이 의자가 필요해요', '내일 점심 12시 반 둘이요, 창가 자리', '다음 주 금요일 6명 2층 룸', '오늘 3시에 2명', '금요일 퇴근하고 커플로 갈게요'];
 
   /* ---------- 열기 / 닫기 ---------- */
   function open() {
     pop.hidden = false; fab.setAttribute('aria-expanded', 'true');
     if (!greeted) {
       greeted = true;
-      bot('안녕하세요, 바로키친 성수점 예약 도우미예요.\n원하시는 날짜, 시간, 인원을 편하게 적어 주세요. 10월 중 예약할 수 있어요.');
+      bot('안녕하세요, 바로키친 성수점 예약 도우미예요.\n원하시는 날짜, 시간, 인원을 편하게 적어 주세요. 오늘 이후 날짜로 예약할 수 있어요.');
     }
     setTimeout(() => input.focus(), 50);
   }
@@ -84,18 +84,20 @@
     // ----- 날짜 -----
     const monday = BT.parseDate(BT.TODAY); monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
     let m;
-    const setMD = (mo, d) => {
-      if (mo !== BT.MONTH) { out.problems.push({ k: 'date', msg: `${mo}월은 아직 예약을 받지 않아요. 10월 날짜로 알려 주세요.` }); return; }
-      const last = new Date(BT.YEAR, BT.MONTH, 0).getDate();
-      if (d < 1 || d > last) { out.problems.push({ k: 'date', msg: `10월 ${d}일은 없는 날짜예요.` }); return; }
-      out.date = `${BT.YEAR}-${BT.pad(mo)}-${BT.pad(d)}`;
+    /* 연도를 말하지 않으면 올해, 이미 지난 달이면 내년으로 본다 */
+    const setMD = (mo, d, y) => {
+      if (mo < 1 || mo > 12) { out.problems.push({ k: 'date', msg: `${mo}월은 없는 달이에요.` }); return; }
+      const year = y || (mo < BT.MONTH ? BT.YEAR + 1 : BT.YEAR);
+      const last = new Date(year, mo, 0).getDate();
+      if (d < 1 || d > last) { out.problems.push({ k: 'date', msg: `${mo}월 ${d}일은 없는 날짜예요.` }); return; }
+      out.date = `${year}-${BT.pad(mo)}-${BT.pad(d)}`;
     };
     if ((m = cut(/(\d{1,2})\s*월\s*(\d{1,2})\s*일/))) setMD(+m[1], +m[2]);
     else if ((m = cut(/(?:^|\s)(\d{1,2})[\/.](\d{1,2})(?=\s|$|[^\d])/))) setMD(+m[1], +m[2]);
     else if ((m = cut(/오늘|내일|낼|모레|글피/))) {
       const add = { '오늘': 0, '내일': 1, '낼': 1, '모레': 2, '글피': 3 }[m[0]];
       const dt = BT.parseDate(BT.TODAY); dt.setDate(dt.getDate() + add);
-      setMD(dt.getMonth() + 1, dt.getDate());
+      setMD(dt.getMonth() + 1, dt.getDate(), dt.getFullYear());
     } else if ((m = s.match(/(이번\s*주?|다음\s*주|담주|다다음\s*주)?\s*(주말|[월화수목금토일])(요일|욜)/) || s.match(/(이번\s*주?|다음\s*주|담주|다다음\s*주)?\s*(주말)()/)) && cut(new RegExp(m[0].replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))) {
       const idx = m[2] === '주말' ? 5 : DOW[m[2]];
       const dt = new Date(monday); dt.setDate(monday.getDate() + idx);
@@ -103,8 +105,13 @@
       if (w === '다음주' || w === '담주') dt.setDate(dt.getDate() + 7);
       else if (w === '다다음주') dt.setDate(dt.getDate() + 14);
       else if (BT.iso(dt) < BT.TODAY) dt.setDate(dt.getDate() + 7);
-      setMD(dt.getMonth() + 1, dt.getDate());
-    } else if ((m = cut(/(\d{1,2})\s*일(?!요)/))) setMD(BT.MONTH, +m[1]);
+      setMD(dt.getMonth() + 1, dt.getDate(), dt.getFullYear());
+    } else if ((m = cut(/(\d{1,2})\s*일(?!요)/))) {
+      // '17일'처럼 날만 말하면 이번 달, 이미 지났으면 다음 달
+      const d = +m[1], next = new Date(BT.YEAR, BT.MONTH, 1);
+      if (`${BT.YEAR}-${BT.pad(BT.MONTH)}-${BT.pad(d)}` < BT.TODAY) setMD(next.getMonth() + 1, d, next.getFullYear());
+      else setMD(BT.MONTH, d, BT.YEAR);
+    }
     if (out.date && out.date < BT.TODAY) { out.problems.push({ k: 'date', msg: `${BT.fmtDate(out.date, 'short')}은 이미 지난 날짜예요.` }); delete out.date; }
 
     // ----- 시간 -----
@@ -144,7 +151,7 @@
 
   /* ---------- 2단계: 로컬 LLM (프로토타입: 고정 응답) ----------
    * 실제 구현: 서버가 Ollama 소형 모델에 문장과 빈 항목을 넘기고 { date, time, party } JSON만 받는다.
-   * 받은 값은 규칙 파서 결과와 똑같이 코드로 다시 검사한다(10월 여부, 영업시간, 인원 범위).
+   * 받은 값은 규칙 파서 결과와 똑같이 코드로 다시 검사한다(지난 날짜 여부, 영업시간, 인원 범위).
    * 여기서는 서버가 없으므로 아래 표에 있는 문장만 정해진 값을 돌려주고, 나머지는 빈 응답으로 둔다. */
   const LLM_FIXED = {
     '금요일 퇴근하고 커플로 갈게요': { party: 2 }
@@ -153,7 +160,7 @@
     const res = LLM_FIXED[raw.trim()] || {};
     const out = {};
     keys.forEach(k => { if (res[k] != null) out[k] = res[k]; });
-    if (out.date && (out.date < BT.TODAY || +out.date.slice(5, 7) !== BT.MONTH)) delete out.date;
+    if (out.date && out.date < BT.TODAY) delete out.date;
     if (out.time && !BT.timeCheck(out.time, st).ok) delete out.time;
     if (out.party != null && (out.party < st.minParty || out.party > st.maxParty)) delete out.party;
     return out;
@@ -179,7 +186,7 @@
     if (!got && !r.phone) {
       misses++;
       if (misses >= 2) { fallback(); return; }
-      bot((via === 'llm' ? `규칙 파서와 ${LLM} 모두 예약 정보를 찾지 못했어요.` : '죄송해요, 예약 정보를 찾지 못했어요.') + '\n"10월 10일 저녁 7시 4명"처럼 날짜·시간·인원을 알려 주세요.');
+      bot((via === 'llm' ? `규칙 파서와 ${LLM} 모두 예약 정보를 찾지 못했어요.` : '죄송해요, 예약 정보를 찾지 못했어요.') + '\n"다음 주 토요일 저녁 7시 4명"처럼 날짜·시간·인원을 알려 주세요.');
       return;
     }
     misses = 0;
@@ -187,7 +194,7 @@
     card(missing);
     if (missing.length) {
       const k = missing[0];
-      if (k === 'date') bot('언제 방문하실까요? 10월 중 날짜로 알려 주세요.');
+      if (k === 'date') bot('언제 방문하실까요? 오늘 이후 날짜로 알려 주세요.');
       if (k === 'time' && slot.date === BT.TODAY) bot(`오늘은 ${BT.toHHMM(BT.toMin(BT.NOW) + (st.slotMinutes || 30))}–${prevSlot(st.hours.close)} 사이에 예약돼요. 몇 시쯤 오실까요?`);
       else if (k === 'time') bot(r.timeHint === 'lunch' ? `점심은 ${st.hours.open}–${prevSlot(st.hours.breakStart)} 사이에 예약돼요. 몇 시쯤 오실까요?`
         : r.timeHint === 'dinner' ? `저녁은 ${st.hours.breakEnd}–${prevSlot(st.hours.close)} 사이에 예약돼요. 몇 시쯤 오실까요?`

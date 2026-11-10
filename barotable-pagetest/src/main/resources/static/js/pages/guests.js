@@ -59,6 +59,7 @@
     $('#g-minus').disabled = S.party <= st.minParty;
     $('#g-plus').disabled = S.party >= st.maxParty;
     $('#g-time-now').hidden = S.mode !== 'quick';
+    $('#g-time-now').textContent = `지금 ${BT.NOW}`;
     $('#g-time').hidden = S.mode !== 'phone';
     $('#g-phone-row').hidden = S.mode !== 'phone';
     if (S.mode === 'phone') {

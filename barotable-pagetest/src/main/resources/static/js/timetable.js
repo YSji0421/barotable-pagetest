@@ -1,7 +1,7 @@
 /* =========================================================
  * 테이블별 시간표 (점주 대시보드 · 손님 배정 공통)
  * v2 프로토타입의 "오늘 테이블 시간표"를 옮긴 것. 차이점:
- *  - 기준 시각은 실제 시계가 아니라 BT.NOW (하드코딩 19:00)
+ *  - 기준 시각은 BT.NOW (화면을 연 순간의 현재 시각)
  *  - 블록은 BT.reservations() 에서 만든다 (취소 · 노쇼는 빠짐)
  *  - 브레이크 타임을 회색 띠로 표시한다 (v2에는 없음)
  * ========================================================= */
@@ -53,7 +53,7 @@ window.Timetable = (function () {
         <div class="tt-track">${brk}${blocks}${pv}</div></div>`;
     }).join('');
 
-    const nowIn = now >= open && now <= close;
+    const nowIn = now >= open && now <= close && opt.showNow !== false;
     host.innerHTML = `<div class="tt ${opt.compact ? 'tt-compact' : ''}" style="--tt-now:${pos(now)}">
       <div class="tt-head"><span class="tt-name-h">테이블</span><div class="tt-scale">${ticks}</div></div>
       <div class="tt-body">${rows}</div>

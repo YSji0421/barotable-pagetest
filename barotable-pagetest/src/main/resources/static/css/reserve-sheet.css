@@ -1,0 +1,20 @@
+/* Reservation selector is a centered desktop dialog and a mobile bottom sheet. */
+.booking-bottom-sheet,.booking-overlay{box-sizing:border-box}
+body[data-screen="reserve"] .booking-overlay{background:rgba(27, 28, 30,.40);backdrop-filter:blur(3px)}
+body[data-screen="reserve"] .booking-bottom-sheet{background:#fff;border:1px solid #ebecec;box-shadow:0 26px 76px rgba(21, 24, 27,.18)}
+body[data-screen="reserve"] .sheet-kicker,body[data-screen="reserve"] .sheet-section-index{color:#656a70}
+body[data-screen="reserve"] .sheet-top,body[data-screen="reserve"] .sheet-footer{background:#fff}
+body[data-screen="reserve"] .sheet-body{overscroll-behavior:contain}
+body[data-screen="reserve"] #ai-fab{z-index:45}
+body[data-screen="reserve"] #chat-pop{z-index:48}
+@media(min-width:760px){
+  body[data-screen="reserve"] .booking-bottom-sheet{top:50%;bottom:auto;left:50%;transform:translate(-50%,-50%);width:min(94vw,560px);max-height:min(88dvh,780px);border-radius:18px}
+  body[data-screen="reserve"] .sheet-handle{display:none}
+  body[data-screen="reserve"] .sheet-top{padding-top:24px}
+}
+@media(max-width:759px){
+  body[data-screen="reserve"] .booking-bottom-sheet{top:auto;bottom:0;left:0;transform:none;width:100%;max-height:92dvh;border-radius:20px 20px 0 0}
+  body[data-screen="reserve"] .sheet-top{padding:14px 20px 16px}
+  body[data-screen="reserve"] .sheet-body{padding-inline:20px}
+  body[data-screen="reserve"] .sheet-footer{padding-inline:20px}
+}

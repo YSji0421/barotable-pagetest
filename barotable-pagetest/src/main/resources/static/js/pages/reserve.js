@@ -1,9 +1,10 @@
 /* C-03 좌석도 선택
- * 구현: 10월 날짜 선택, 영업시간 안 30분 단위 시간 선택(브레이크 제외), 층 탭 · 구역 필터, AI 채팅 조건 적용
+ * 구현: 10월 날짜 선택, 영업시간 안 30분 단위 시간 선택(브레이크 제외), 층 탭 · 구역 필터, 예약 조건 적용
  * 운영 조건(BT.store())의 영업시간 · 인원 범위 · 이용 시간 · 자리 직접 고르기 허용 여부를 따른다.
  * 휴대폰: 좌석도 크게 보기(전체 화면, 뒤로가기로 닫힘)와 화면 아래 고정 바로 스크롤을 줄인다.
  * 막힌 자리: 고른 날짜·시간과 이용 시간(dineMinutes)이 겹치는 예약이 있는 테이블.
- *   예약 목록은 BT.reservations()라서 점주의 전화 예약 · 테이블 이동 · 손님 취소가 그대로 반영된다.
+ *   예약 목록은 BT.reservations() 하나만 쓴다. 점주 대시보드와 같은 목록이라 점주의 전화 예약 · 테이블 이동 ·
+ *   노쇼 · 손님 취소가 그대로 반영되고, 대시보드에 없는 예약 때문에 자리가 막히는 일이 없다.
  * 오늘은 기준 시각(BT.NOW) 이후 시간만 고를 수 있다.
  * 추천: AI가 아니라 아래 규칙 엔진이 고른다. 최종 선택은 손님.
  */
@@ -13,23 +14,16 @@
   const d0 = BT.draft();
   const days = BT.octoberDays();
   const st = BT.store(), DINE = st.dineMinutes;
-  /* 매장 전체 예약. 지금 고르고 있는 내 예약(임시 저장분)은 내 자리를 막지 않도록 뺀다 */
-  const bookings = () => { const mine = BT.guestNo(BT.draft()); return BT.reservations().filter(r => r.no !== mine); };
+  /* 매장 전체 예약 = 점주 대시보드와 같은 목록 (손님 화면 전용 예약 없음) */
+  const bookings = () => BT.reservations();
   const isPast = time => S.date === BT.TODAY && BT.toMin(time) <= BT.toMin(BT.NOW);
 
   /* ---------- 규칙 엔진 ----------
    * 1) 이미 예약(같은 날, 이용 시간 겹침) · 좌석 부족 · 구역 인원 조건 위반을 뺀다.
    * 2) 남은 후보 중 채팅 요청(창가 · 바 등)과 맞는 테이블을 먼저, 그 안에서 좌석 수가 가장 작은 테이블.
-   * 점주 화면과 같은 공통 규칙(BT.tableClash, BT.seatRule)을 쓴다. */
-  const clash = t => BT.tableClash(t.id, S.date, S.time, bookings());
-  function violation(t, party) {
-    if (isPast(S.time)) return `${BT.NOW} 이전 시간은 예약할 수 없어요`;
-    const tc = BT.timeCheck(S.time);
-    if (!tc.ok) return tc.reason;
-    const c = clash(t);
-    if (c) return `${c.time}에 예약이 있어 ${BT.toHHMM(BT.toMin(c.time) + DINE)}까지 쓸 수 없어요`;
-    return BT.seatRule(t, party, fl);
-  }
+   * 점주 화면 · 예약 확정과 같은 공통 판정(BT.checkSeat)을 쓴다. */
+  const check = (t, party) => BT.checkSeat(t, { date: S.date, time: S.time, party }, bookings(), fl);
+  function violation(t, party) { const c = check(t, party); return c ? c.reason : null; }
   /* 고른 시간이 지났거나 영업시간 · 브레이크에 걸리면 다음 예약 가능 시간으로 옮긴다 */
   function fixTime() {
     if (!isPast(S.time) && BT.slots().some(x => x.time === S.time && !x.break)) return false;
@@ -37,7 +31,7 @@
     if (next) { S.time = next.time; return true; }
     return false;
   }
-  /* 채팅 요청(ai-chat.js의 prefs)과 테이블이 몇 개나 맞는지 */
+  /* 추가 요청 조건과 테이블이 몇 개나 맞는지 */
   function prefScore(t) {
     return S.prefs.filter(p => p === '룸' ? t.shape === 'room' : /^\d층$/.test(p) ? t.floorName === p : t.tags.includes(p)).length;
   }
@@ -49,7 +43,10 @@
     return t && { t, matched: best > 0 };
   }
 
-  const S = { date: d0.date, time: d0.time, party: Math.min(st.maxParty, Math.max(st.minParty, d0.party)), floor: fl[0].id, zone: 'all', selected: null, request: '', prefs: [] };
+  const initialDate = /^\d{4}-\d{2}-\d{2}$/.test(d0.date || '') && d0.date >= BT.TODAY ? d0.date : (days.find(x => !x.past) || days[0]).iso;
+  const S = { date: initialDate, time: d0.time, party: Math.min(st.maxParty, Math.max(st.minParty, d0.party)), floor: fl[0].id, zone: 'all', selected: null, request: '', prefs: [] };
+  const todayYear = Number(BT.TODAY.slice(0, 4)), todayMonth = Number(BT.TODAY.slice(5, 7));
+  let viewYear = Number(S.date.slice(0, 4)), viewMonth = Number(S.date.slice(5, 7));
 
   /* ---------- 달력 + 가로 스크롤 인원/시간 (한 장의 바텀시트) ---------- */
   function sheetSummary() {
@@ -61,19 +58,38 @@
   }
   function renderDates() {
     const box = $('#date-strip');
-    const offset = new Date(BT.YEAR, BT.MONTH - 1, 1).getDay();
-    box.innerHTML = Array.from({ length: offset }, () => '<span class="calendar-empty" aria-hidden="true"></span>').join('') + days.map(x => `
+    const first = new Date(viewYear, viewMonth - 1, 1);
+    const offset = first.getDay();
+    const count = new Date(viewYear, viewMonth, 0).getDate();
+    const label = $('#calendar-month-label');
+    if (label) label.textContent = `${viewYear}년 ${viewMonth}월`;
+    const prev = $('#calendar-prev');
+    if (prev) prev.disabled = viewYear < todayYear || (viewYear === todayYear && viewMonth <= todayMonth);
+    const currentDays = Array.from({length: count}, (_, i) => {
+      const day = i + 1, date = new Date(viewYear, viewMonth - 1, day);
+      const iso = `${viewYear}-${BT.pad(viewMonth)}-${BT.pad(day)}`;
+      return {iso, day, dow: date.getDay(), week: ['일','월','화','수','목','금','토'][date.getDay()], past: iso < BT.TODAY, today: iso === BT.TODAY};
+    });
+    box.innerHTML = Array.from({length: offset}, () => '<span class="calendar-empty" aria-hidden="true"></span>').join('') + currentDays.map(x => `
       <button type="button" class="calendar-day ${x.dow === 0 ? 'sun' : ''} ${x.dow === 6 ? 'sat' : ''} ${x.iso === S.date ? 'on' : ''}"
-       data-date="${x.iso}" ${x.past ? 'disabled' : ''} aria-pressed="${x.iso === S.date}" aria-label="10월 ${x.day}일 ${x.week}요일${x.past ? ', 지난 날짜' : ''}">
+       data-date="${x.iso}" ${x.past ? 'disabled' : ''} aria-pressed="${x.iso === S.date}" aria-label="${viewMonth}월 ${x.day}일 ${x.week}요일${x.past ? ', 지난 날짜' : ''}">
        <span>${x.day}</span>${x.today ? '<small>오늘</small>' : ''}</button>`).join('');
     box.querySelectorAll('button:not([disabled])').forEach(b => b.addEventListener('click', () => {
       S.date = b.dataset.date;
-      if (fixTime()) BT.toast(`오늘은 ${BT.NOW} 이후만 예약돼요. ${S.time}로 바꿨어요`);
-      S.selected = null; renderDates(); renderTimes(); renderMap(); renderPanel(); sheetSummary();
+      viewYear = Number(S.date.slice(0, 4)); viewMonth = Number(S.date.slice(5, 7));
+      fixTime(); S.selected = null; renderDates(); renderTimes(); renderMap(); renderPanel(); sheetSummary();
     }));
     sheetSummary();
   }
-  function renderParty() {
+  function shiftCalendarMonth(delta) {
+    const next = new Date(viewYear, viewMonth - 1 + delta, 1);
+    const targetYear = next.getFullYear(), targetMonth = next.getMonth() + 1;
+    if (delta < 0 && (targetYear < todayYear || (targetYear === todayYear && targetMonth < todayMonth))) return;
+    viewYear = targetYear; viewMonth = targetMonth; renderDates();
+  }
+  $('#calendar-prev').addEventListener('click', () => shiftCalendarMonth(-1));
+  $('#calendar-next').addEventListener('click', () => shiftCalendarMonth(1));
+    function renderParty() {
     const ps = $('#party-strip');
     ps.innerHTML = Array.from({length:st.maxParty-st.minParty+1}, (_,i)=>i+st.minParty).map(p=>
       `<button class="sheet-choice ${p===S.party?'on':''}" type="button" data-party="${p}" aria-pressed="${p===S.party}">${p}명</button>`).join('');
@@ -81,7 +97,7 @@
       S.party=Number(b.dataset.party); S.selected=null;renderParty();renderMap();renderPanel();sheetSummary();
     }));
     const pv = $('#p-val'); if(pv) pv.textContent = S.party+'명';
-    const ph=$('#p-hint'); if(ph) ph.textContent = `${st.minParty}–${st.maxParty}명 · 좌우로 스크롤`;
+    const ph=$('#p-hint'); if(ph) ph.textContent = `${st.minParty}–${st.maxParty}명`;
     const rb=$('#req-badge'); if(rb){rb.hidden=!S.request;rb.textContent=S.request?S.request:'';}
   }
   $('#p-minus').addEventListener('click',()=>{S.party=Math.max(st.minParty,S.party-1);renderParty();renderMap();renderPanel();});
@@ -129,10 +145,18 @@
       selected: S.selected,
       recommended: S.selected ? null : ((recommend(S.party) || {}).t || {}).id,
       zoneFilter: S.zone,
-      statusOf: t => clash(t) ? { cls: 'reserved', sub: '예약 완료' } : { cls: 'available' },
+      statusOf: t => {
+        const c = check(t, S.party);
+        if (!c) return { cls: 'available', sub: '예약 가능', title: '선택 가능' };
+        /* 막힌 이유에 맞는 표시: 예약 겹침 / 인원·구역 조건 / 시간 / 한도 */
+        const LOOK = { reserved: ['reserved', '예약 완료'], full: ['reserved', '예약 마감'], rule: ['small', '조건 불가'], time: ['small', '시간 불가'] };
+        const [cls, sub] = LOOK[c.kind];
+        return { cls, sub, title: c.reason };
+      },
       onSelect: t => {
         if (!st.allowSeatChoice) { BT.toast('이 매장은 자리를 자동으로 배정해요. 추천 자리로 예약됩니다'); return; }
-        if (clash(t)) return;
+        const bad = violation(t, S.party);
+        if (bad) { BT.toast(bad); return; }
         S.selected = S.selected === t.id ? null : t.id;
         renderMap(); renderPanel();
       }
@@ -147,7 +171,7 @@
   function goNext(t) {
     // 저장 직전 재검사: 화면 상태와 상관없이 코드로 한 번 더 확인
     if (!t || violation(t, S.party)) { renderMap(); renderPanel(); return; }
-    BT.saveDraft({ date: S.date, time: S.time, party: S.party, table: t.id, request: S.request });
+    BT.saveDraft({ date: S.date, time: S.time, party: S.party, table: t.id, request: S.request, confirmed: false, no: null });
     BT.go('confirm');
   }
   function recInfo() {
@@ -324,6 +348,7 @@
   window.ReservePage = {
     apply(patch) {
       Object.assign(S, { date: patch.date, time: patch.time, party: patch.party, request: patch.request || '', prefs: patch.prefs || [], selected: null });
+      viewYear = Number(S.date.slice(0, 4)); viewMonth = Number(S.date.slice(5, 7));
       fixTime();
       renderDates(); renderTimes(); renderParty(); renderMap(); renderPanel();
       closeSheet(true); setStage(2);
@@ -347,6 +372,7 @@
     // 확인하지 않고 닫은 수정 사항은 좌석도에 적용하지 않습니다.
     if(committed !== true && sheetOriginal){
       Object.assign(S, sheetOriginal);
+      viewYear = Number(S.date.slice(0, 4)); viewMonth = Number(S.date.slice(5, 7));
       renderDates();renderParty();renderTimes();renderMap();renderPanel();
     }
     sheetOriginal=null;
@@ -356,7 +382,7 @@
     const valid = S.time && !isPast(S.time) && BT.timeCheck(S.time).ok && BT.slots().some(x=>x.time===S.time&&!x.break);
     if(!valid){BT.toast('예약 가능한 날짜와 시간을 선택해 주세요');return;}
     S.selected=null;
-    BT.saveDraft({date:S.date,time:S.time,party:S.party,table:null,request:S.request});
+    BT.saveDraft({date:S.date,time:S.time,party:S.party,table:null,request:S.request,confirmed:false,no:null});
     closeSheet(true);
     setStage(2);
     BT.toast('예약 가능한 테이블을 확인해 보세요');
@@ -366,7 +392,7 @@
     $('#stage-store').hidden=stage===2;
     $('#stage-seat').hidden=stage!==2;
     document.querySelectorAll('#booking-steps [data-progress]').forEach(el=>{
-      const n=Number(el.dataset.progress);el.classList.toggle('on',n===stage);el.classList.toggle('done',n<stage);
+      const n=Number(el.dataset.progress);el.classList.toggle('on',n===stage);el.classList.toggle('done',n<stage);if(n===stage)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');
     });
     $('#seat-context').textContent=`${BT.fmtDate(S.date,'short')}   ·   ${S.time}   ·   ${S.party}명`;
     bar.hidden=stage!==2;

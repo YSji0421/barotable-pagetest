@@ -1,0 +1,14 @@
+/* Unified customer reservation steps: all four stages in the same header location */
+.site-head .wrap{flex-wrap:nowrap;min-height:66px}
+.site-head .head-store{white-space:nowrap}
+.unified-steps{margin-left:auto;display:flex;align-items:center;flex-wrap:nowrap;gap:8px;color:#92999c;white-space:nowrap}
+.unified-steps>span{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:500}
+.unified-steps>span em{font-style:normal}
+.unified-steps>span b{width:24px;height:24px;display:inline-grid;place-items:center;border-radius:50%;background:#f2f3f4;border:1px solid #e7eaed;font-size:12px;font-weight:600;color:#92999c}
+.unified-steps>span.done{color:#62686d}
+.unified-steps>span.done b{background:#eff1f3;border-color:#dbe1e7;color:#526B86}
+.unified-steps>span.on{color:#26374A;font-weight:700}
+.unified-steps>span.on b{background:#526B86;border-color:#526B86;color:white}
+.unified-steps>i{width:22px;height:1px;background:#e1e2e4;display:inline-block;flex:none}
+@media(max-width:880px){.site-head .wrap{gap:8px}.site-head .head-store{display:none}.unified-steps{gap:5px}.unified-steps>span em{display:none}.unified-steps>i{width:12px}.unified-steps>span b{width:26px;height:26px}}
+@media(max-width:410px){.site-head .wrap{padding-inline:12px}.unified-steps>i{width:9px}.unified-steps>span b{width:23px;height:23px}}

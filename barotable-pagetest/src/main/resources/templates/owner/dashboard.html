@@ -6,7 +6,11 @@
   <title>바로테이블 · 점주 대시보드</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap">
-  <link rel="stylesheet" href="../../static/css/app.css?v=20261025a" th:href="@{/css/app.css}">
+  <link rel="stylesheet" href="../../static/css/app.css?v=20261110a" th:href="@{/css/app.css}">
+  <link rel="stylesheet" href="../../static/css/responsive.css?v=20261110a" th:href="@{/css/responsive.css}">
+  <link rel="stylesheet" href="../../static/css/wide.css?v=20261110a" th:href="@{/css/wide.css}">
+  <link rel="stylesheet" href="../../static/css/ui.css?v=20261110a" th:href="@{/css/ui.css}">
+  <link rel="stylesheet" href="../../static/css/owner.css?v=20261110a" th:href="@{/css/owner.css}">
 </head>
 <!-- O-02 점주 대시보드 (예약 현황 · 노쇼 · 워크인 재배정) -->
 <body data-depth="1" data-screen="owner-dashboard" th:data-server="true">
@@ -16,20 +20,18 @@
 <div class="page-title">
 <div>
 <h1>오늘 예약 현황</h1>
-<p><span id="today-label">2026.10.05 (월)</span> · 예약 · 좌석 · 도착 현황을 빠르게 확인하세요.</p>
+<p>예약 · 좌석 · 도착 현황을 빠르게 확인하세요. <span hidden="" id="today-label"></span></p>
 </div>
 <div class="row">
-<span class="badge badge-gray" style="font-size:13px;padding:6px 12px">기준 시간 19:00</span>
-<button class="btn btn-ghost btn-sm" id="demo-reset" title="취소·노쇼·워크인 등 바꾼 내용을 처음 데이터로 되돌립니다" type="button">시연 데이터 초기화</button>
+<span class="badge badge-gray" style="font-size:13px;padding:6px 12px">오늘 운영</span>
+<button class="btn btn-ghost btn-sm" id="demo-reset" title="변경한 예약 상태를 초기 데이터로 되돌립니다" type="button">변경 내역 초기화</button>
 </div>
 </div>
 <section aria-label="예약 요약" class="stats" id="stats"></section>
-
-
 <div class="owner-overview-grid"><section aria-labelledby="tt-title" class="card owner-timeline-card" id="owner-timetable" style="margin-top:18px">
 <div class="card-head">
 <div><h2 id="tt-title">오늘 예약 시간표</h2><p class="card-sub">시간대와 테이블을 선택해 필요한 예약만 확인하세요.</p></div>
-<span aria-live="polite" class="soon-status" id="soon-status"></span>
+<div class="owner-timeline-actions"><span aria-live="polite" class="soon-status" id="soon-status"></span><a class="btn btn-ghost btn-sm owner-schedule-open" data-go="owner-schedule" href="../owner/schedule.html" th:href="@{/owner/schedule}">크게 보기 ↗</a></div>
 </div>
 <div aria-label="시간표 보기 옵션" class="owner-tt-toolbar">
 <div aria-label="시간대 선택" class="owner-tt-period" id="tt-period" role="group">
@@ -49,7 +51,6 @@
 </section><section aria-label="현재 좌석도" class="card" id="owner-seats">
 <div class="card-head">
 <div class="row"><h2>현재 좌석도</h2><div class="tabs" id="floor-tabs" role="tablist"></div></div>
-
 <div class="owner-seat-header-actions"><div class="legend"><span><i class="l-booked"></i>확정</span><span><i class="l-visited"></i>방문 완료</span><span><i class="l-waiting"></i>곧 도착</span><span><i class="l-empty"></i>빈자리</span></div><button aria-expanded="false" class="owner-text-button" id="seat-toggle" type="button">크게 보기 ↗</button></div></div>
 <div class="map-scroll"><div id="map"></div></div>
 </section></div><div class="owner-bottom-grid"><section aria-label="예약 목록" class="card" id="owner-reservations">
@@ -77,11 +78,12 @@
 </section></div></div></main>
 </div>
 
-  <script src="../../static/js/data.js?v=20261025a" th:src="@{/js/data.js}"></script>
-  <script src="../../static/js/common.js?v=20261025a" th:src="@{/js/common.js}"></script>
-  <script src="../../static/js/seatmap.js?v=20261025a" th:src="@{/js/seatmap.js}"></script>
-  <script src="../../static/js/timetable.js?v=20261025a" th:src="@{/js/timetable.js}"></script>
-  <script src="../../static/js/owner-common.js?v=20261025a" th:src="@{/js/owner-common.js}"></script>
-  <script src="../../static/js/pages/dashboard.js?v=20261025a" th:src="@{/js/pages/dashboard.js}"></script>
+  <script src="../../static/js/data.js?v=20261110a" th:src="@{/js/data.js}"></script>
+  <script src="../../static/js/common.js?v=20261110a" th:src="@{/js/common.js}"></script>
+  <script src="../../static/js/seatmap.js?v=20261110a" th:src="@{/js/seatmap.js}"></script>
+  <script src="../../static/js/timetable.js?v=20261110a" th:src="@{/js/timetable.js}"></script>
+  <script src="../../static/js/owner-common.js?v=20261110a" th:src="@{/js/owner-common.js}"></script>
+  <script src="../../static/js/pages/dashboard.js?v=20261110a" th:src="@{/js/pages/dashboard.js}"></script>
+  <script src="../../static/js/drag-scroll.js?v=20261110a" th:src="@{/js/drag-scroll.js}"></script>
 </body>
 </html>

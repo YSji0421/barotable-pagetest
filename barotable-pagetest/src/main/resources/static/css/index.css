@@ -1,0 +1,13 @@
+.venue-headline-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex: 0 0 auto; }
+.venue-headline-actions .venue-member-login {
+  min-height: 50px; padding: 14px 20px; border: 1px solid var(--line); border-radius: 13px;
+  background: var(--surface); color: var(--ink); font-weight: 700; text-decoration: none;
+  white-space: nowrap; display: inline-flex; align-items: center; justify-content: center;
+}
+.venue-headline-actions .venue-member-login:hover { background: var(--surface-2); border-color: #b9c8d8; }
+.venue-headline-actions .venue-start-desktop { margin: 0; }
+@media (max-width: 900px) and (min-width: 761px) {
+  .venue-headline { align-items: flex-start; flex-wrap: wrap; }
+  .venue-headline-actions { width: 100%; justify-content: flex-start; }
+}
+@media (max-width: 760px) { .venue-headline-actions .venue-member-login { display: none; } }
